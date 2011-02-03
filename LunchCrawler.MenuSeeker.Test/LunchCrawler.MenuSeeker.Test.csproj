@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{094A1A82-8633-4404-B90F-097A582FA9B9}</ProjectGuid>
+    <ProjectGuid>{162A9AC8-1AF4-4228-B906-877EEA9A6073}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LunchCrawler.MenuSeeker.Test</RootNamespace>
@@ -45,6 +45,16 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LunchCrawler.Common\LunchCrawler.Common.csproj">
+      <Project>{6348B9F6-5DF8-4FBE-9A1A-6283459B00D7}</Project>
+      <Name>LunchCrawler.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LunchCrawler.Data.Local\LunchCrawler.Data.Local.csproj">
+      <Project>{EC121545-A07D-4589-8FDE-7B16D7B89B1C}</Project>
+      <Name>LunchCrawler.Data.Local</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

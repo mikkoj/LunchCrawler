@@ -1,4 +1,4 @@
-﻿namespace Lunch.Common.Enums
+﻿namespace LunchCrawler.Common.Enums
 {
     public enum FoodMatchType
     {

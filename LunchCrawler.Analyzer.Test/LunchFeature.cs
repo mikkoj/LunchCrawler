@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-using Lunch.Common.Enums;
+using LunchCrawler.Common.Enums;
 
 
 namespace LunchCrawler.Analyzer.Test

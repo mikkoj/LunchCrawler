@@ -8,7 +8,8 @@ using System.Collections.Generic;
 
 using HtmlAgilityPack;
 
-using Lunch.Common.Enums;
+using LunchCrawler.Common;
+using LunchCrawler.Common.Enums;
 
 
 namespace LunchCrawler.Analyzer.Test
@@ -18,7 +19,7 @@ namespace LunchCrawler.Analyzer.Test
         public void ParseLunchMenu(string url)
         {
             Console.WriteLine("-> {0}\n", url);
-            var htmlDoc = GetHtmlDocForUrl(url);
+            var htmlDoc = Helpers.GetHtmlDocForUrl(url);
 
             var detectedFeatures = htmlDoc.DocumentNode.DescendantNodes()
                                                        .Where(node => !ShouldSkipNode(node))
@@ -27,54 +28,6 @@ namespace LunchCrawler.Analyzer.Test
                                                        .ToList();
             PrintDetectedFeatures(detectedFeatures);
         }
-
-        private static Encoding TryGetEncoding(string encoding)
-        {
-            try
-            {
-                return Encoding.GetEncoding(encoding);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private static HtmlDocument GetHtmlDocForUrl(string url)
-        {
-            var doc = new HtmlDocument();
-            const int buffsize = 1024;
-
-            try
-            {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    {
-                        var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
-
-                        var buf = new byte[buffsize];
-                        var ms = new MemoryStream();
-                        int count;
-
-                        while ((count = response.GetResponseStream().Read(buf, 0, buffsize)) != 0)
-                            ms.Write(buf, 0, count);
-
-                        var bytes = ms.GetBuffer();
-                        var docEncoding = doc.DetectEncodingHtml(headerEncoding.GetString(bytes));
-                        var convertedBytes = Encoding.Convert(docEncoding ?? headerEncoding, Encoding.Unicode, bytes);
-                        var convertedData = Encoding.Unicode.GetString(convertedBytes);
-
-                        doc.LoadHtml(convertedData);
-                    }
-            }
-            catch (Exception ex)
-            {
-                // jotain
-            }
-
-            return doc;
-        }
-
 
         private static bool ShouldSkipNode(HtmlNode node)
         {

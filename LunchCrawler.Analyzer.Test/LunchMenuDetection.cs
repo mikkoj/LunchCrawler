@@ -6,8 +6,9 @@ using System.Web;
 
 using HtmlAgilityPack;
 
-using Lunch.Common.Enums;
 using Lunch.Data;
+
+using LunchCrawler.Common.Enums;
 
 
 namespace LunchCrawler.Analyzer.Test
