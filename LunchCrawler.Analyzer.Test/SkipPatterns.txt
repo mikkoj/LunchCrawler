@@ -1,0 +1,4 @@
+﻿(arkisin|viikonloppu(isin|na))\s*?(k(el)?lo)?\s*\d+\s*?[–-]\s*?\d+
+(k(el)?lo)\s*\d+\s*?[–-]\s*?\d+
+\d\.\d\.\d\d
+puh.\s*\(?\d+

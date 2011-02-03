@@ -1,0 +1,56 @@
+
+_UpgradeReport_Files/
+[Dd]ebug*/
+[Rr]elease*/
+_ReSharper*/
+TestResults/
+
+*/obj
+Plugins/*/obj
+Plugins/*/bin
+Plugins/*/*/obj
+Plugins/*/*/bin
+
+#ignore output mild compiler
+dlldata.c
+SimpleExt.h
+SimpleExt.tlb
+SimpleExt_i.c
+SimpleExt_p.c
+
+#ignore some unwanted files
+*.ncb
+*.suo
+*.csproj.user
+*.orig
+*.msi
+*.user
+Thumbs.db
+#ignore thumbnails created by windows
+Thumbs.db
+#Ignore files build by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*

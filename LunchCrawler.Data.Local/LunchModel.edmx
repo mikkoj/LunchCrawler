@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LunchModel.Store" Alias="Self" Provider="System.Data.SQLite" ProviderManifestToken="ISO8601" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="LunchModelStoreContainer">
+          <EntitySet Name="BasicFoodKeywords" EntityType="LunchModel.Store.BasicFoodKeywords" store:Type="Tables" />
+          <EntitySet Name="FoodKeywords" EntityType="LunchModel.Store.FoodKeywords" store:Type="Tables" />
+          <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.Store.LunchMenuFeatures" store:Type="Tables" />
+        </EntityContainer>
+        <EntityType Name="BasicFoodKeywords">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Name="Word" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Weight" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FoodKeywords">
+          <Key>
+            <PropertyRef Name="FoodKeyword" />
+          </Key>
+          <Property Name="FoodKeyword" Type="nvarchar" Nullable="false" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="LunchMenuFeatures">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Restaurant" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="FeatureType" Type="int" Nullable="false" />
+          <Property Name="Line" Type="int" Nullable="false" />
+          <Property Name="LinePosition" Type="int" Nullable="false" />
+          <Property Name="Created" Type="datetime" />
+          <Property Name="LastUsed" Type="datetime" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LunchModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="LunchEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="FoodKeywords" EntityType="LunchModel.FoodKeyword" />
+          <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.LunchMenuFeature" />
+          <EntitySet Name="BasicFoodKeywords" EntityType="LunchModel.BasicFoodKeyword" />
+        </EntityContainer>
+        <EntityType Name="FoodKeyword">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Name="Word" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="LunchMenuFeature">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="Restaurant" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="FeatureType" Type="Int32" Nullable="false" />
+          <Property Name="Line" Type="Int32" Nullable="false" />
+          <Property Name="LinePosition" Type="Int32" Nullable="false" />
+          <Property Name="Created" Type="DateTime" />
+          <Property Name="LastUsed" Type="DateTime" />
+        </EntityType>
+        <EntityType Name="BasicFoodKeyword">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Type="String" Name="Word" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Weight" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LunchModelStoreContainer" CdmEntityContainer="LunchEntities">
+          <EntitySetMapping Name="FoodKeywords"><EntityTypeMapping TypeName="LunchModel.FoodKeyword"><MappingFragment StoreEntitySet="FoodKeywords">
+            <ScalarProperty Name="Word" ColumnName="FoodKeyword" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="LunchMenuFeatures"><EntityTypeMapping TypeName="LunchModel.LunchMenuFeature"><MappingFragment StoreEntitySet="LunchMenuFeatures">
+            <ScalarProperty Name="id" ColumnName="id" />
+            <ScalarProperty Name="Restaurant" ColumnName="Restaurant" />
+            <ScalarProperty Name="FeatureType" ColumnName="FeatureType" />
+            <ScalarProperty Name="Line" ColumnName="Line" />
+            <ScalarProperty Name="LinePosition" ColumnName="LinePosition" />
+            <ScalarProperty Name="Created" ColumnName="Created" />
+            <ScalarProperty Name="LastUsed" ColumnName="LastUsed" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="BasicFoodKeywords">
+            <EntityTypeMapping TypeName="LunchModel.BasicFoodKeyword">
+              <MappingFragment StoreEntitySet="BasicFoodKeywords">
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="Word" ColumnName="Word" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="LunchModel">
+        <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="4.875" PointY="0.875" Height="1.099264322916667" IsExpanded="true" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="2.75" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
+        <EntityTypeShape EntityType="LunchModel.BasicFoodKeyword" Width="1.875" PointX="0.5" PointY="0.75" Height="1.2636116536458335" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
