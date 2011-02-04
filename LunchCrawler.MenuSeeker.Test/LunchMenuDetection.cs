@@ -57,7 +57,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 UpdateLunchMenuKeyword(exactMatch);
 
                 // let's also remove the keyword not to match it again
-                _keywords.Remove(exactMatch);
+                _keywords.RemoveAll(keyword => keyword.Word == exactMatch.Word);
 
                 return scorePoint;
             }
@@ -73,7 +73,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 scorePoint.PointsGiven = partialMatch.Weight;
                 
                 // let's also remove the keyword not to match it again
-                _keywords.Remove(exactMatch);
+                _keywords.RemoveAll(keyword => keyword.Word == partialMatch.Word);
 
                 return scorePoint;
             }
