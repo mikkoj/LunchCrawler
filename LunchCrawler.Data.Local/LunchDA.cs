@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Data;
 using System.Collections.Generic;
 
@@ -84,6 +85,48 @@ namespace LunchCrawler.Data.Local
             using (var entityContext = new LunchEntities())
             {
                 return entityContext.LunchMenuKeywords.ToList();
+            }
+        }
+
+        public void UpdateWithPotentialLunchMenu(string url, PotentialLunchMenu lunchMenu)
+        {
+            try
+            {
+                using (var entityContext = new LunchEntities())
+                {
+                    var existingUrl = entityContext.PotentialLunchMenus
+                                                   .FirstOrDefault(menu => menu.URL.Equals(url));
+                    if (existingUrl != null)
+                    {
+                        existingUrl.Status = lunchMenu.Status;
+                        
+                        existingUrl.SiteHash = lunchMenu.SiteHash;
+                        existingUrl.LunchMenuProbability = lunchMenu.LunchMenuProbability;
+                        existingUrl.TotalPoints = lunchMenu.TotalPoints;
+                        existingUrl.TotalKeywordDetections = lunchMenu.TotalKeywordDetections;
+                        existingUrl.ExactKeywordDetections = lunchMenu.ExactKeywordDetections;
+                        existingUrl.PartialKeywordDetections = lunchMenu.PartialKeywordDetections;
+                        existingUrl.FuzzyKeywordDetections = lunchMenu.FuzzyKeywordDetections;
+                        existingUrl.DateUpdated = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        lunchMenu.DateAdded = DateTime.UtcNow;
+                        entityContext.PotentialLunchMenus.AddObject(lunchMenu);
+                    }
+
+                    entityContext.SaveChanges();
+                }
+            }
+            catch (UpdateException updateException)
+            {
+                var baseError = updateException.GetBaseException();
+                if (baseError.Message.Contains("not unique"))
+                {
+                    return;
+                }
+
+                throw;
             }
         }
     }

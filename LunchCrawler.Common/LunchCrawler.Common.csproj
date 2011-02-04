@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\LunchMenuStatus.cs" />
     <Compile Include="Enums\StringMatchType.cs" />
     <Compile Include="Enums\LunchMenuFeatureType.cs" />
     <Compile Include="Enums\LunchMenuDetectionLocation.cs" />
+    <Compile Include="LunchMenuDocument.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

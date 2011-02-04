@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Lunch.sqlite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EntityDeploy Include="LunchModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

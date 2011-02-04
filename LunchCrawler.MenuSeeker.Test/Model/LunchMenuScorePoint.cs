@@ -1,7 +1,7 @@
 ﻿using LunchCrawler.Common.Enums;
 
 
-namespace LunchCrawler.MenuSeeker.Test
+namespace LunchCrawler.MenuSeeker.Test.Model
 {
     /// <summary>
     /// Represents a single lunch menu -match that was given a point.
@@ -19,10 +19,15 @@ namespace LunchCrawler.MenuSeeker.Test
         public StringMatchType DetectionType { get; set; }
 
         /// <summary>
-        /// Detected word.
+        /// The basic lunch menu keyword that was detected.
         /// </summary>
-        public string DetectedWord { get; set; }
+        public string DetectedKeyword { get; set; }
 
+        /// <summary>
+        /// The entire text that was detected for the node, title, URL, or etc.
+        /// </summary>
+        public string DetectedText { get; set; }
+        
         /// <summary>
         /// Points given to the word.
         /// </summary>

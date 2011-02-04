@@ -19,9 +19,9 @@ namespace LunchCrawler.Analyzer.Test
         public void ParseLunchMenu(string url)
         {
             Console.WriteLine("-> {0}\n", url);
-            var htmlDoc = Utils.GetHtmlDocumentForUrl(url);
+            var htmlDoc = Utils.GetLunchMenuDocumentForUrl(url);
 
-            var detectedFeatures = htmlDoc.DocumentNode.DescendantNodes()
+            var detectedFeatures = htmlDoc.HtmlDocument.DocumentNode.DescendantNodes()
                                                        .Where(node => !ShouldSkipNode(node))
                                                        .Select(LunchMenuDetection.DetectFeature)
                                                        .Where(feature => feature.Type != LunchMenuFeatureType.Unknown)
