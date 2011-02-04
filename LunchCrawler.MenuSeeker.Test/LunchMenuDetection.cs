@@ -71,6 +71,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 scorePoint.DetectedText = node.InnerText;
                 scorePoint.DetectedKeyword = partialMatch.Word;
                 scorePoint.PointsGiven = partialMatch.Weight;
+                UpdateLunchMenuKeyword(partialMatch);
                 
                 // let's also remove the keyword not to match it again
                 _keywords.RemoveAll(keyword => keyword.Word == partialMatch.Word);
