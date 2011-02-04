@@ -9,13 +9,9 @@ namespace LunchCrawler.MenuSeeker.Test
     {
         static void Main()
         {
-            var parser = new LunchMenuSeeker();
-
-            parser.ScoreLunchMenu(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
+            LunchMenuSeeker.ScoreLunchMenu(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
             Separator();
-            parser.ScoreLunchMenu(@"http://www.veritasstadion.com/cgi/menu.htm");
-            Separator();
-            parser.ScoreLunchMenu(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
+            LunchMenuSeeker.ScoreLunchMenu(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
 
             Console.ReadLine();
         }

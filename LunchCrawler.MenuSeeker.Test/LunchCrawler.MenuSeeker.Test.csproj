@@ -48,9 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LunchMenuDetector.cs" />
-    <Compile Include="LunchMenuScorePoint.cs" />
-    <Compile Include="LunchMenuScores.cs" />
+    <Compile Include="LunchMenuDetection.cs" />
+    <Compile Include="Model\LunchMenuScorePoint.cs" />
+    <Compile Include="Model\LunchMenuScores.cs" />
     <Compile Include="LunchMenuSeeker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

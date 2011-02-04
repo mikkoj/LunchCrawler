@@ -3,8 +3,7 @@ using System.IO;
 using System.Net;
 using System.Web;
 using System.Text;
-using System.Linq;
-using System.Collections.Generic;
+using System.Security.Cryptography;
 
 using HtmlAgilityPack;
 
@@ -25,15 +24,17 @@ namespace LunchCrawler.Common
             }
         }
 
-        public static HtmlDocument GetHtmlDocumentForUrl(string url)
+        public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url)
         {
-            var doc = new HtmlDocument();
+            var document = new LunchMenuDocument();
+            var htmlDoc = new HtmlDocument();
+
             const int buffsize = 1024;
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                var request = (HttpWebRequest)WebRequest.Create(url);
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
 
@@ -45,24 +46,40 @@ namespace LunchCrawler.Common
                         ms.Write(buf, 0, count);
 
                     var bytes = ms.GetBuffer();
-                    var docEncoding = doc.DetectEncodingHtml(headerEncoding.GetString(bytes));
+                   
+                    var docEncoding = htmlDoc.DetectEncodingHtml(headerEncoding.GetString(bytes));
                     var convertedBytes = Encoding.Convert(docEncoding ?? headerEncoding, Encoding.Unicode, bytes);
-                    var convertedData = Encoding.Unicode.GetString(convertedBytes);
 
-                    doc.LoadHtml(convertedData);
+                    // let's compute a hash for the document
+                    var hasher = new SHA256Managed();
+                    document.Hash = BitConverter.ToString(hasher.ComputeHash(convertedBytes));
+
+                    var convertedData = Encoding.Unicode.GetString(convertedBytes);
+                    htmlDoc.LoadHtml(convertedData);
                 }
             }
             catch (Exception ex)
             {
-                // jotain
+                return null;
             }
 
-            return doc;
+            document.HtmlDocument = htmlDoc;
+
+            return document;
         }
+
 
         public static string HtmlDecode(string text)
         {
             return HttpUtility.HtmlDecode(text);
+        }
+
+
+        public static string CleanContentForConsole(string content)
+        {
+            var inputdata = Encoding.Unicode.GetBytes(HtmlDecode(content));
+            var consoleString = Console.OutputEncoding.GetString(Encoding.Convert(Encoding.Unicode, Console.OutputEncoding, inputdata));
+            return consoleString.Replace("\n", string.Empty).Replace("\r", string.Empty);
         }
     }
 }

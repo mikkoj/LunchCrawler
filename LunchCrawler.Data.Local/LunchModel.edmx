@@ -9,6 +9,7 @@
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.Store.FoodKeywords" store:Type="Tables" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.Store.LunchMenuFeatures" store:Type="Tables" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.Store.LunchMenuKeywords" store:Type="Tables" />
+          <EntitySet Name="PotentialLunchMenus" EntityType="LunchModel.Store.PotentialLunchMenus" store:Type="Tables" />
         </EntityContainer>
         <EntityType Name="FoodKeywords">
           <Key>
@@ -36,6 +37,22 @@
           <Property Name="Weight" Type="int" Nullable="false" />
           <Property Name="DetectionCount" Type="integer" Nullable="false" />
         </EntityType>
+        <EntityType Name="PotentialLunchMenus">
+          <Key>
+            <PropertyRef Name="URL" />
+          </Key>
+          <Property Name="URL" Type="nvarchar" Nullable="false" MaxLength="350" />
+          <Property Name="SiteHash" Type="nvarchar" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="TotalPoints" Type="int" Nullable="false" />
+          <Property Name="LunchMenuProbability" Type="decimal" Nullable="false" Precision="53" />
+          <Property Name="TotalKeywordDetections" Type="int" />
+          <Property Name="ExactKeywordDetections" Type="int" />
+          <Property Name="PartialKeywordDetections" Type="int" />
+          <Property Name="FuzzyKeywordDetections" Type="int" />
+          <Property Name="DateAdded" Type="datetime" Nullable="false" />
+          <Property Name="DateUpdated" Type="datetime" />
+        </EntityType>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -44,6 +61,7 @@
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.FoodKeyword" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.LunchMenuFeature" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.LunchMenuKeyword" />
+          <EntitySet Name="PotentialLunchMenus" EntityType="LunchModel.PotentialLunchMenu" />
         </EntityContainer>
         <EntityType Name="FoodKeyword">
           <Key>
@@ -70,6 +88,22 @@
           <Property Type="String" Name="Word" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Weight" Nullable="false" />
           <Property Type="Int64" Name="DetectionCount" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PotentialLunchMenu">
+          <Key>
+            <PropertyRef Name="URL" />
+          </Key>
+          <Property Type="String" Name="URL" Nullable="false" MaxLength="350" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="SiteHash" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Status" Nullable="false" />
+          <Property Type="Int32" Name="TotalPoints" Nullable="false" />
+          <Property Type="Decimal" Name="LunchMenuProbability" Nullable="false" Precision="53" Scale="0" />
+          <Property Type="Int32" Name="TotalKeywordDetections" />
+          <Property Type="Int32" Name="ExactKeywordDetections" />
+          <Property Type="Int32" Name="PartialKeywordDetections" />
+          <Property Type="Int32" Name="FuzzyKeywordDetections" />
+          <Property Type="DateTime" Name="DateAdded" Nullable="false" />
+          <Property Type="DateTime" Name="DateUpdated" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -98,6 +132,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="PotentialLunchMenus">
+            <EntityTypeMapping TypeName="LunchModel.PotentialLunchMenu">
+              <MappingFragment StoreEntitySet="PotentialLunchMenus">
+                <ScalarProperty Name="DateUpdated" ColumnName="DateUpdated" />
+                <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
+                <ScalarProperty Name="FuzzyKeywordDetections" ColumnName="FuzzyKeywordDetections" />
+                <ScalarProperty Name="PartialKeywordDetections" ColumnName="PartialKeywordDetections" />
+                <ScalarProperty Name="ExactKeywordDetections" ColumnName="ExactKeywordDetections" />
+                <ScalarProperty Name="TotalKeywordDetections" ColumnName="TotalKeywordDetections" />
+                <ScalarProperty Name="LunchMenuProbability" ColumnName="LunchMenuProbability" />
+                <ScalarProperty Name="TotalPoints" ColumnName="TotalPoints" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SiteHash" ColumnName="SiteHash" />
+                <ScalarProperty Name="URL" ColumnName="URL" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -122,6 +173,7 @@
         <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="5.375" PointY="0.75" Height="1.099264322916667" IsExpanded="true" />
         <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="3.25" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
         <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="2.25" PointX="0.625" PointY="0.75" Height="1.4279589843749996" />
+        <EntityTypeShape EntityType="LunchModel.PotentialLunchMenu" Width="2" PointX="7.125" PointY="0.75" Height="2.7427376302083335" />
       </Diagram>
     </Diagrams>
   </Designer>
