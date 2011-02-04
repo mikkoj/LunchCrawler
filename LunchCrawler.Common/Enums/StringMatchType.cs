@@ -1,6 +1,6 @@
 ﻿namespace LunchCrawler.Common.Enums
 {
-    public enum FoodMatchType
+    public enum StringMatchType
     {
         NoMatch = 0,
 

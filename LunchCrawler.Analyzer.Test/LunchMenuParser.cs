@@ -19,12 +19,12 @@ namespace LunchCrawler.Analyzer.Test
         public void ParseLunchMenu(string url)
         {
             Console.WriteLine("-> {0}\n", url);
-            var htmlDoc = Helpers.GetHtmlDocForUrl(url);
+            var htmlDoc = Utils.GetHtmlDocumentForUrl(url);
 
             var detectedFeatures = htmlDoc.DocumentNode.DescendantNodes()
                                                        .Where(node => !ShouldSkipNode(node))
                                                        .Select(LunchMenuDetection.DetectFeature)
-                                                       .Where(feature => feature.Type != LunchFeatureType.Unknown)
+                                                       .Where(feature => feature.Type != LunchMenuFeatureType.Unknown)
                                                        .ToList();
             PrintDetectedFeatures(detectedFeatures);
         }
@@ -39,12 +39,12 @@ namespace LunchCrawler.Analyzer.Test
         }
 
 
-        private static void PrintDetectedFeatures(IEnumerable<LunchFeature> detectedFeatures)
+        private static void PrintDetectedFeatures(IEnumerable<LunchMenuFeature> detectedFeatures)
         {
             Console.OutputEncoding = Encoding.Default;
             foreach (var feature in detectedFeatures)
             {
-                if (feature.Type == LunchFeatureType.Weekday)
+                if (feature.Type == LunchMenuFeatureType.Weekday)
                 {
                     Console.WriteLine();
                 }

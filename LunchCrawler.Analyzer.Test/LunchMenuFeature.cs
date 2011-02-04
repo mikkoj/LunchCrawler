@@ -1,14 +1,13 @@
-﻿using HtmlAgilityPack;
-
-using LunchCrawler.Common.Enums;
+﻿using LunchCrawler.Common.Enums;
+using HtmlAgilityPack;
 
 
 namespace LunchCrawler.Analyzer.Test
 {
-    public class LunchFeature
+    public class LunchMenuFeature
     {
-        public LunchFeatureType Type { get; set; }
-        public FoodMatchType FoodMatchType { get; set; }
+        public LunchMenuFeatureType Type { get; set; }
+        public StringMatchType FoodMatchType { get; set; }
         public int Line { get; set; }
         public int LinePosition { get; set; }
 

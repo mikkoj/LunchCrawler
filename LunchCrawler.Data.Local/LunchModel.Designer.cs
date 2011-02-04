@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 
-namespace Lunch.Data
+namespace LunchCrawler.Data.Local
 {
     #region Contexts
     
@@ -100,18 +100,18 @@ namespace Lunch.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<BasicFoodKeyword> BasicFoodKeywords
+        public ObjectSet<LunchMenuKeyword> LunchMenuKeywords
         {
             get
             {
-                if ((_BasicFoodKeywords == null))
+                if ((_LunchMenuKeywords == null))
                 {
-                    _BasicFoodKeywords = base.CreateObjectSet<BasicFoodKeyword>("BasicFoodKeywords");
+                    _LunchMenuKeywords = base.CreateObjectSet<LunchMenuKeyword>("LunchMenuKeywords");
                 }
-                return _BasicFoodKeywords;
+                return _LunchMenuKeywords;
             }
         }
-        private ObjectSet<BasicFoodKeyword> _BasicFoodKeywords;
+        private ObjectSet<LunchMenuKeyword> _LunchMenuKeywords;
 
         #endregion
         #region AddTo Methods
@@ -133,11 +133,11 @@ namespace Lunch.Data
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the BasicFoodKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// Deprecated Method for adding a new object to the LunchMenuKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
-        public void AddToBasicFoodKeywords(BasicFoodKeyword basicFoodKeyword)
+        public void AddToLunchMenuKeywords(LunchMenuKeyword lunchMenuKeyword)
         {
-            base.AddObject("BasicFoodKeywords", basicFoodKeyword);
+            base.AddObject("LunchMenuKeywords", lunchMenuKeyword);
         }
 
         #endregion
@@ -147,87 +147,6 @@ namespace Lunch.Data
     #endregion
     
     #region Entities
-    
-    /// <summary>
-    /// No Metadata Documentation available.
-    /// </summary>
-    [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="BasicFoodKeyword")]
-    [Serializable()]
-    [DataContractAttribute(IsReference=true)]
-    public partial class BasicFoodKeyword : EntityObject
-    {
-        #region Factory Method
-    
-        /// <summary>
-        /// Create a new BasicFoodKeyword object.
-        /// </summary>
-        /// <param name="word">Initial value of the Word property.</param>
-        /// <param name="weight">Initial value of the Weight property.</param>
-        public static BasicFoodKeyword CreateBasicFoodKeyword(global::System.String word, global::System.Int32 weight)
-        {
-            BasicFoodKeyword basicFoodKeyword = new BasicFoodKeyword();
-            basicFoodKeyword.Word = word;
-            basicFoodKeyword.Weight = weight;
-            return basicFoodKeyword;
-        }
-
-        #endregion
-        #region Primitive Properties
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.String Word
-        {
-            get
-            {
-                return _Word;
-            }
-            set
-            {
-                if (_Word != value)
-                {
-                    OnWordChanging(value);
-                    ReportPropertyChanging("Word");
-                    _Word = StructuralObject.SetValidValue(value, false);
-                    ReportPropertyChanged("Word");
-                    OnWordChanged();
-                }
-            }
-        }
-        private global::System.String _Word;
-        partial void OnWordChanging(global::System.String value);
-        partial void OnWordChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.Int32 Weight
-        {
-            get
-            {
-                return _Weight;
-            }
-            set
-            {
-                OnWeightChanging(value);
-                ReportPropertyChanging("Weight");
-                _Weight = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("Weight");
-                OnWeightChanged();
-            }
-        }
-        private global::System.Int32 _Weight;
-        partial void OnWeightChanging(global::System.Int32 value);
-        partial void OnWeightChanged();
-
-        #endregion
-    
-    }
     
     /// <summary>
     /// No Metadata Documentation available.
@@ -486,6 +405,113 @@ namespace Lunch.Data
         private Nullable<global::System.DateTime> _LastUsed;
         partial void OnLastUsedChanging(Nullable<global::System.DateTime> value);
         partial void OnLastUsedChanged();
+
+        #endregion
+    
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="LunchMenuKeyword")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class LunchMenuKeyword : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new LunchMenuKeyword object.
+        /// </summary>
+        /// <param name="word">Initial value of the Word property.</param>
+        /// <param name="weight">Initial value of the Weight property.</param>
+        /// <param name="detectionCount">Initial value of the DetectionCount property.</param>
+        public static LunchMenuKeyword CreateLunchMenuKeyword(global::System.String word, global::System.Int32 weight, global::System.Int64 detectionCount)
+        {
+            LunchMenuKeyword lunchMenuKeyword = new LunchMenuKeyword();
+            lunchMenuKeyword.Word = word;
+            lunchMenuKeyword.Weight = weight;
+            lunchMenuKeyword.DetectionCount = detectionCount;
+            return lunchMenuKeyword;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Word
+        {
+            get
+            {
+                return _Word;
+            }
+            set
+            {
+                if (_Word != value)
+                {
+                    OnWordChanging(value);
+                    ReportPropertyChanging("Word");
+                    _Word = StructuralObject.SetValidValue(value, false);
+                    ReportPropertyChanged("Word");
+                    OnWordChanged();
+                }
+            }
+        }
+        private global::System.String _Word;
+        partial void OnWordChanging(global::System.String value);
+        partial void OnWordChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 Weight
+        {
+            get
+            {
+                return _Weight;
+            }
+            set
+            {
+                OnWeightChanging(value);
+                ReportPropertyChanging("Weight");
+                _Weight = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Weight");
+                OnWeightChanged();
+            }
+        }
+        private global::System.Int32 _Weight;
+        partial void OnWeightChanging(global::System.Int32 value);
+        partial void OnWeightChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 DetectionCount
+        {
+            get
+            {
+                return _DetectionCount;
+            }
+            set
+            {
+                OnDetectionCountChanging(value);
+                ReportPropertyChanging("DetectionCount");
+                _DetectionCount = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DetectionCount");
+                OnDetectionCountChanged();
+            }
+        }
+        private global::System.Int64 _DetectionCount;
+        partial void OnDetectionCountChanging(global::System.Int64 value);
+        partial void OnDetectionCountChanged();
 
         #endregion
     

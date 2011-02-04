@@ -1,6 +1,6 @@
 ﻿namespace LunchCrawler.Common.Enums
 {
-    public enum LunchFeatureType
+    public enum LunchMenuFeatureType
     {
         Unknown = 0,
 

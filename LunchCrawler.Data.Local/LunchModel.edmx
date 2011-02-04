@@ -6,17 +6,10 @@
     <edmx:StorageModels>
     <Schema Namespace="LunchModel.Store" Alias="Self" Provider="System.Data.SQLite" ProviderManifestToken="ISO8601" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="LunchModelStoreContainer">
-          <EntitySet Name="BasicFoodKeywords" EntityType="LunchModel.Store.BasicFoodKeywords" store:Type="Tables" />
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.Store.FoodKeywords" store:Type="Tables" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.Store.LunchMenuFeatures" store:Type="Tables" />
+          <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.Store.LunchMenuKeywords" store:Type="Tables" />
         </EntityContainer>
-        <EntityType Name="BasicFoodKeywords">
-          <Key>
-            <PropertyRef Name="Word" />
-          </Key>
-          <Property Name="Word" Type="nvarchar" Nullable="false" MaxLength="100" />
-          <Property Name="Weight" Type="int" Nullable="false" />
-        </EntityType>
         <EntityType Name="FoodKeywords">
           <Key>
             <PropertyRef Name="FoodKeyword" />
@@ -35,6 +28,14 @@
           <Property Name="Created" Type="datetime" />
           <Property Name="LastUsed" Type="datetime" />
         </EntityType>
+        <EntityType Name="LunchMenuKeywords">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Name="Word" Type="nvarchar" Nullable="false" />
+          <Property Name="Weight" Type="int" Nullable="false" />
+          <Property Name="DetectionCount" Type="integer" Nullable="false" />
+        </EntityType>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -42,7 +43,7 @@
         <EntityContainer Name="LunchEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.FoodKeyword" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.LunchMenuFeature" />
-          <EntitySet Name="BasicFoodKeywords" EntityType="LunchModel.BasicFoodKeyword" />
+          <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.LunchMenuKeyword" />
         </EntityContainer>
         <EntityType Name="FoodKeyword">
           <Key>
@@ -62,12 +63,13 @@
           <Property Name="Created" Type="DateTime" />
           <Property Name="LastUsed" Type="DateTime" />
         </EntityType>
-        <EntityType Name="BasicFoodKeyword">
+        <EntityType Name="LunchMenuKeyword">
           <Key>
             <PropertyRef Name="Word" />
           </Key>
-          <Property Type="String" Name="Word" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Word" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Weight" Nullable="false" />
+          <Property Type="Int64" Name="DetectionCount" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -87,9 +89,10 @@
             <ScalarProperty Name="Created" ColumnName="Created" />
             <ScalarProperty Name="LastUsed" ColumnName="LastUsed" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="BasicFoodKeywords">
-            <EntityTypeMapping TypeName="LunchModel.BasicFoodKeyword">
-              <MappingFragment StoreEntitySet="BasicFoodKeywords">
+          <EntitySetMapping Name="LunchMenuKeywords">
+            <EntityTypeMapping TypeName="LunchModel.LunchMenuKeyword">
+              <MappingFragment StoreEntitySet="LunchMenuKeywords">
+                <ScalarProperty Name="DetectionCount" ColumnName="DetectionCount" />
                 <ScalarProperty Name="Weight" ColumnName="Weight" />
                 <ScalarProperty Name="Word" ColumnName="Word" />
               </MappingFragment>
@@ -116,9 +119,9 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="LunchModel">
-        <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="4.875" PointY="0.875" Height="1.099264322916667" IsExpanded="true" />
-        <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="2.75" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
-        <EntityTypeShape EntityType="LunchModel.BasicFoodKeyword" Width="1.875" PointX="0.5" PointY="0.75" Height="1.2636116536458335" />
+        <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="5.375" PointY="0.75" Height="1.099264322916667" IsExpanded="true" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="3.25" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="2.25" PointX="0.625" PointY="0.75" Height="1.4279589843749996" />
       </Diagram>
     </Diagrams>
   </Designer>

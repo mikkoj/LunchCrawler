@@ -3,10 +3,20 @@ using System.Data;
 using System.Collections.Generic;
 
 
-namespace Lunch.Data
+namespace LunchCrawler.Data.Local
 {
-    public class LunchDA
+    public sealed class LunchDA
     {
+        static readonly LunchDA _instance = new LunchDA();
+
+        static LunchDA() { }
+        LunchDA() { }
+
+        public static LunchDA Instance
+        {
+            get { return _instance; }
+        }
+
         public void AddFoodKeyword(string food)
         {
             try
@@ -34,6 +44,33 @@ namespace Lunch.Data
             }
         }
 
+        public void UpdateLunchMenuKeywordDetectionCount(string word, long detectionCount)
+        {
+            try
+            {
+                using (var entityContext = new LunchEntities())
+                {
+                    var existingKeyword = entityContext.LunchMenuKeywords
+                                                       .FirstOrDefault(keyword => keyword.Word.Equals(word));
+                    if (existingKeyword != null)
+                    {
+                        existingKeyword.DetectionCount = detectionCount;
+                        entityContext.SaveChanges();
+                    }
+                }
+            }
+            catch (UpdateException updateException)
+            {
+                var baseError = updateException.GetBaseException();
+                if (baseError.Message.Contains("not unique"))
+                {
+                    return;
+                }
+
+                throw;
+            }
+        }
+
         public IList<FoodKeyword> GetAllFoodKeywords()
         {
             using (var entityContext = new LunchEntities())
@@ -42,11 +79,11 @@ namespace Lunch.Data
             }
         }
 
-        public IList<BasicFoodKeyword> GetAllBasicFoodKeywords()
+        public IList<LunchMenuKeyword> GetAllBasicLunchMenuKeywords()
         {
             using (var entityContext = new LunchEntities())
             {
-                return entityContext.BasicFoodKeywords.ToList();
+                return entityContext.LunchMenuKeywords.ToList();
             }
         }
     }

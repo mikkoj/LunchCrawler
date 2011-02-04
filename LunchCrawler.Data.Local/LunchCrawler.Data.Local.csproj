@@ -8,8 +8,8 @@
     <ProjectGuid>{EC121545-A07D-4589-8FDE-7B16D7B89B1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lunch.Data</RootNamespace>
-    <AssemblyName>Lunch.Data</AssemblyName>
+    <RootNamespace>LunchCrawler.Data.Local</RootNamespace>
+    <AssemblyName>LunchCrawler.Data.Local</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
