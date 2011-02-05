@@ -74,6 +74,15 @@ namespace LunchCrawler.Common
             return HttpUtility.HtmlDecode(text);
         }
 
+        public static bool ShouldSkipNode(HtmlNode node)
+        {
+            var excludes = new[] { "script", "style" };
+            // only nodes without child-nodes, comments, scripts or root DOCUMENT-type
+            return node.HasChildNodes ||
+                   node.NodeType == HtmlNodeType.Comment ||
+                   node.NodeType == HtmlNodeType.Document ||
+                   (node.ParentNode != null && Array.Exists(excludes, exclude => node.ParentNode.Name.ToLower().Contains(exclude)));
+        }
 
         public static string CleanContentForConsole(string content)
         {

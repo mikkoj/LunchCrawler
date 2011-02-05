@@ -22,22 +22,12 @@ namespace LunchCrawler.Analyzer.Test
             var htmlDoc = Utils.GetLunchMenuDocumentForUrl(url);
 
             var detectedFeatures = htmlDoc.HtmlDocument.DocumentNode.DescendantNodes()
-                                                       .Where(node => !ShouldSkipNode(node))
+                                                       .Where(node => !Utils.ShouldSkipNode(node))
                                                        .Select(LunchMenuDetection.DetectFeature)
                                                        .Where(feature => feature.Type != LunchMenuFeatureType.Unknown)
                                                        .ToList();
             PrintDetectedFeatures(detectedFeatures);
         }
-
-        private static bool ShouldSkipNode(HtmlNode node)
-        {
-            // only nodes without child-nodes, comments, scripts or root DOCUMENT-type
-            return node.HasChildNodes ||
-                   node.NodeType == HtmlNodeType.Comment ||
-                   node.NodeType == HtmlNodeType.Document ||
-                   (node.ParentNode != null && node.ParentNode.Name.ToLower().Contains("script"));
-        }
-
 
         private static void PrintDetectedFeatures(IEnumerable<LunchMenuFeature> detectedFeatures)
         {

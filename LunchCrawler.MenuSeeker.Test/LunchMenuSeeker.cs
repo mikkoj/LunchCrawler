@@ -17,6 +17,30 @@ namespace LunchCrawler.MenuSeeker.Test
     {
         private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
 
+        private static bool IsLink(HtmlNode node) 
+        {
+            return node.NodeType == HtmlNodeType.Element && node.Name == "a" && node.Attributes["href"] != null;
+        }
+
+        public static void SeekLunchMenus()
+        {
+            string query = "http://www.google.com/search?as_q=lounaslista&num=1000&hl=fi";
+            var lunchpages = Utils.GetLunchMenuDocumentForUrl(query);
+
+            if (lunchpages != null)
+            {
+                var urls = lunchpages.HtmlDocument
+                                     .DocumentNode
+                                     .DescendantNodes()
+                                     .Where(IsLink)
+                                     .Select(node => node.Attributes["href"].Value)
+                                     .Where(link => link.StartsWith("http://") && !link.ToLower().Contains("google"));
+
+                foreach (var url in urls)
+                    ScoreLunchMenu(url);
+            }
+        }
+
         public static void ScoreLunchMenu(string url)
         {
             Console.WriteLine("-> {0}\n", url);
@@ -55,7 +79,7 @@ namespace LunchCrawler.MenuSeeker.Test
             var scorePoints = lunchMenuDocument.HtmlDocument
                                                .DocumentNode
                                                .DescendantNodes()
-                                               .Where(node => !ShouldSkipNode(node))
+                                               .Where(node => !Utils.ShouldSkipNode(node))
                                                .Select(lunchMenuDetection.ScoreNode)
                                                .Where(scored => scored.DetectionLocation != LunchMenuDetectionLocation.Unknown)
                                                .ToList();
@@ -65,7 +89,6 @@ namespace LunchCrawler.MenuSeeker.Test
                 Points = scorePoints
             };
         }
-
 
         private static void CompletePotentialLunchMenu(LunchMenuDocument lunchMenuDocument, PotentialLunchMenu potentialMenu, LunchMenuScores scores)
         {
@@ -78,17 +101,6 @@ namespace LunchCrawler.MenuSeeker.Test
             potentialMenu.PartialKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Partial);
             potentialMenu.FuzzyKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
         }
-
-
-        private static bool ShouldSkipNode(HtmlNode node)
-        {
-            // only nodes without child-nodes, comments, scripts or root DOCUMENT-type
-            return node.HasChildNodes ||
-                   node.NodeType == HtmlNodeType.Comment ||
-                   node.NodeType == HtmlNodeType.Document ||
-                   (node.ParentNode != null && node.ParentNode.Name.ToLower().Contains("script"));
-        }
-
 
         private static void PrintScores(LunchMenuStatus status, LunchMenuScores scores)
         {
@@ -107,6 +119,8 @@ namespace LunchCrawler.MenuSeeker.Test
                                   scorePoint.DetectedKeyword,
                                   consoledata);
             }
+
+            Console.WriteLine("\n\n--------------------------------------------------------------\n");
         }
     }
 }

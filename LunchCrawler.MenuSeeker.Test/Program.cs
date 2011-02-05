@@ -9,16 +9,12 @@ namespace LunchCrawler.MenuSeeker.Test
     {
         static void Main()
         {
-            LunchMenuSeeker.ScoreLunchMenu(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
+            LunchMenuSeeker.SeekLunchMenus();
+            /* LunchMenuSeeker.ScoreLunchMenu(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
             Separator();
-            LunchMenuSeeker.ScoreLunchMenu(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
+            LunchMenuSeeker.ScoreLunchMenu(@"http://www.kupittaanpaviljonki.fi/lounaslista/"); */
 
             Console.ReadLine();
-        }
-
-        private static void Separator()
-        {
-            Console.WriteLine("\n\n--------------------------------------------------------------\n");
         }
     }
 }
