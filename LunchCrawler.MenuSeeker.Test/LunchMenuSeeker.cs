@@ -9,7 +9,7 @@ using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
 using LunchCrawler.Data.Local;
 using LunchCrawler.MenuSeeker.Test.Model;
-
+using Google.API.Search;
 
 namespace LunchCrawler.MenuSeeker.Test
 {
@@ -22,9 +22,9 @@ namespace LunchCrawler.MenuSeeker.Test
             return node.NodeType == HtmlNodeType.Element && node.Name == "a" && node.Attributes["href"] != null;
         }
 
-        public static void SeekLunchMenus()
+        public static void SearchLuncMenusRaw()
         {
-            string query = "http://www.google.com/search?as_q=lounaslista&num=1000&hl=fi";
+            string query = "http://www.google.com/search?as_q=lounaslista&num=100&hl=fi";
             var lunchpages = Utils.GetLunchMenuDocumentForUrl(query);
 
             if (lunchpages != null)
@@ -38,6 +38,18 @@ namespace LunchCrawler.MenuSeeker.Test
 
                 foreach (var url in urls)
                     ScoreLunchMenu(url);
+            }
+        }
+
+        public static void SeekLunchMenus()
+        {
+            GwebSearchClient gclient = new GwebSearchClient("mysite");
+            var lunchpages = gclient.Search("lounaslista turku", 1000);         
+
+            if (lunchpages != null)
+            {
+                foreach (var res in lunchpages)
+                    ScoreLunchMenu(res.Url);
             }
         }
 

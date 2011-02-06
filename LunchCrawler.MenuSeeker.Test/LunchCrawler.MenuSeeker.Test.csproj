@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GoogleSearchAPI">
+      <HintPath>..\_lib\GoogleSearchAPI.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\_lib\HtmlAgilityPack.dll</HintPath>
     </Reference>

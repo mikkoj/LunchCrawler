@@ -5,9 +5,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchCrawler.Analyzer.Test"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{8738E46A-1196-4D01-8809-7748AF2D77D3}"
 	ProjectSection(SolutionItems) = preProject
+		_lib\GoogleSearchAPI.dll = _lib\GoogleSearchAPI.dll
+		_lib\GoogleSearchAPI.pdb = _lib\GoogleSearchAPI.pdb
 		_lib\HtmlAgilityPack.dll = _lib\HtmlAgilityPack.dll
 		_lib\HtmlAgilityPack.pdb = _lib\HtmlAgilityPack.pdb
 		_lib\HtmlAgilityPack.XML = _lib\HtmlAgilityPack.XML
+		_lib\Newtonsoft.Json.dll = _lib\Newtonsoft.Json.dll
 		_lib\SimMetrics.dll = _lib\SimMetrics.dll
 		_lib\SimMetrics.PDF = _lib\SimMetrics.PDF
 		_lib\SimMetrics.XML = _lib\SimMetrics.XML
