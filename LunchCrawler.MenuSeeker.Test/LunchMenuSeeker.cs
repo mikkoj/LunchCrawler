@@ -59,7 +59,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
             var potentialMenu = new PotentialLunchMenu
             {
-                URL = url,
+                URL = Utils.GetBaseUrl(url),
                 Status = (int)LunchMenuStatus.OK,
             };
 
@@ -69,16 +69,16 @@ namespace LunchCrawler.MenuSeeker.Test
                 // no special error handling for now, any HTTP error -> can't connect
                 potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
                 PrintScores(LunchMenuStatus.CannotConnect, new LunchMenuScores());
-                LunchDA.Instance.UpdateWithPotentialLunchMenu(url, potentialMenu);
+                LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
                 return;
             }
-
+            
             var scores = GetScoresForHtmlDocument(lunchMenuDocument);
             PrintScores((LunchMenuStatus)potentialMenu.Status, scores);
             
             // ..and let's finish the potential menu object and update the DB
             CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
-            LunchDA.Instance.UpdateWithPotentialLunchMenu(url, potentialMenu);
+            LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
         }
 
 
@@ -126,7 +126,7 @@ namespace LunchCrawler.MenuSeeker.Test
             foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))
             {
                 var consoledata = Utils.CleanContentForConsole(scorePoint.DetectedText);
-                Console.WriteLine("  {0,2:00}: {1}\t -> {2}",
+                Console.WriteLine("{0,2:00}: {1}\t -> {2}",
                                   scorePoint.PointsGiven,
                                   scorePoint.DetectedKeyword,
                                   consoledata);

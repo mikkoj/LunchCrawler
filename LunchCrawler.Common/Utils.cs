@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 using System.Text;
 using System.Security.Cryptography;
@@ -49,12 +51,8 @@ namespace LunchCrawler.Common
                    
                     var docEncoding = htmlDoc.DetectEncodingHtml(headerEncoding.GetString(bytes));
                     var convertedBytes = Encoding.Convert(docEncoding ?? headerEncoding, Encoding.Unicode, bytes);
-
-                    // let's compute a hash for the document
-                    var hasher = new SHA256Managed();
-                    document.Hash = BitConverter.ToString(hasher.ComputeHash(convertedBytes));
-
                     var convertedData = Encoding.Unicode.GetString(convertedBytes);
+
                     htmlDoc.LoadHtml(convertedData);
                 }
             }
@@ -63,9 +61,39 @@ namespace LunchCrawler.Common
                 return null;
             }
 
-            document.HtmlDocument = htmlDoc;
+            if (htmlDoc.ParseErrors != null && htmlDoc.ParseErrors.Count() > 0)
+            {
+                // handle any parse errors
+            }
+            
+            if (htmlDoc.DocumentNode != null)
+            {
+                document.HtmlDocument = htmlDoc;
+
+                // let's also compute a hash for the document
+                document.Hash = ComputeHashForDocument(htmlDoc);
+            }
 
             return document;
+        }
+
+
+        private static string ComputeHashForDocument(HtmlDocument htmlDoc)
+        {
+            var cleanDoc = new HtmlDocument();
+            cleanDoc.LoadHtml(htmlDoc.DocumentNode.InnerHtml);
+
+            var nodesToBeRemoved = cleanDoc.DocumentNode
+                                           .DescendantNodes()
+                                           .Where(ShouldSkipNode)
+                                           .ToList();
+
+            nodesToBeRemoved.ForEach(node => cleanDoc.DocumentNode.RemoveChild(node, true));
+
+            var cleanHtml = cleanDoc.DocumentNode.InnerHtml.Trim();
+            var cleanBytes = Encoding.Unicode.GetBytes(cleanHtml);
+            var hasher = new SHA256Managed();
+            return BitConverter.ToString(hasher.ComputeHash(cleanBytes));
         }
 
 
@@ -89,6 +117,13 @@ namespace LunchCrawler.Common
             var inputdata = Encoding.Unicode.GetBytes(HtmlDecode(content));
             var consoleString = Console.OutputEncoding.GetString(Encoding.Convert(Encoding.Unicode, Console.OutputEncoding, inputdata));
             return consoleString.Replace("\n", string.Empty).Replace("\r", string.Empty);
+        }
+
+
+        public static string GetBaseUrl(string url)
+        {
+            var uri = new Uri(url);
+            return string.Format("{0}{1}", uri.Host, uri.LocalPath);
         }
     }
 }

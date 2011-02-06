@@ -82,13 +82,19 @@ namespace LunchCrawler.MenuSeeker.Test
             return scorePoint;
         }
 
+
         private static void UpdateLunchMenuKeyword(LunchMenuKeyword keyword)
         {
-            // let's increase the weight if count..
-            var existingWeight = keyword.Weight;
-            var existingDetectionCount = keyword.DetectionCount;
+            var existingKeyword = LunchDA.Instance.GetLunchMenuKeyword(keyword.Word);
+            if (existingKeyword == null)
+            {
+                return;
+            }
 
-            var newDetectionCount = keyword.DetectionCount + 1;
+            var existingWeight = existingKeyword.Weight;
+            var existingDetectionCount = existingKeyword.DetectionCount;
+
+            var newDetectionCount = existingDetectionCount + 1;
             LunchDA.Instance.UpdateLunchMenuKeywordDetectionCount(keyword.Word, newDetectionCount);
         }
     }

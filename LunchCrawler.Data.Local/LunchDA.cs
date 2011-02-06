@@ -88,14 +88,14 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public void UpdateWithPotentialLunchMenu(string url, PotentialLunchMenu lunchMenu)
+        public void UpdateWithPotentialLunchMenu(PotentialLunchMenu lunchMenu)
         {
             try
             {
                 using (var entityContext = new LunchEntities())
                 {
                     var existingUrl = entityContext.PotentialLunchMenus
-                                                   .FirstOrDefault(menu => menu.URL.Equals(url));
+                                                   .FirstOrDefault(menu => menu.URL.Equals(lunchMenu.URL));
                     if (existingUrl != null)
                     {
                         existingUrl.Status = lunchMenu.Status;
@@ -124,6 +124,28 @@ namespace LunchCrawler.Data.Local
                 if (baseError.Message.Contains("not unique"))
                 {
                     return;
+                }
+
+                throw;
+            }
+        }
+
+        public LunchMenuKeyword GetLunchMenuKeyword(string word)
+        {
+            try
+            {
+                using (var entityContext = new LunchEntities())
+                {
+                    return entityContext.LunchMenuKeywords
+                                        .FirstOrDefault(keyword => keyword.Word.Equals(word));
+                }
+            }
+            catch (UpdateException updateException)
+            {
+                var baseError = updateException.GetBaseException();
+                if (baseError.Message.Contains("not unique"))
+                {
+                    return null;
                 }
 
                 throw;

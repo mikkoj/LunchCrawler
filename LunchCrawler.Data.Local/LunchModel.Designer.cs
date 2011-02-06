@@ -128,6 +128,22 @@ namespace LunchCrawler.Data.Local
             }
         }
         private ObjectSet<PotentialLunchMenu> _PotentialLunchMenus;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<SearchKeyword> SearchKeywords
+        {
+            get
+            {
+                if ((_SearchKeywords == null))
+                {
+                    _SearchKeywords = base.CreateObjectSet<SearchKeyword>("SearchKeywords");
+                }
+                return _SearchKeywords;
+            }
+        }
+        private ObjectSet<SearchKeyword> _SearchKeywords;
 
         #endregion
         #region AddTo Methods
@@ -162,6 +178,14 @@ namespace LunchCrawler.Data.Local
         public void AddToPotentialLunchMenus(PotentialLunchMenu potentialLunchMenu)
         {
             base.AddObject("PotentialLunchMenus", potentialLunchMenu);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the SearchKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToSearchKeywords(SearchKeyword searchKeyword)
+        {
+            base.AddObject("SearchKeywords", searchKeyword);
         }
 
         #endregion
@@ -605,6 +629,102 @@ namespace LunchCrawler.Data.Local
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
+        public global::System.String Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                OnNameChanging(value);
+                ReportPropertyChanging("Name");
+                _Name = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Name");
+                OnNameChanged();
+            }
+        }
+        private global::System.String _Name;
+        partial void OnNameChanging(global::System.String value);
+        partial void OnNameChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Address
+        {
+            get
+            {
+                return _Address;
+            }
+            set
+            {
+                OnAddressChanging(value);
+                ReportPropertyChanging("Address");
+                _Address = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Address");
+                OnAddressChanged();
+            }
+        }
+        private global::System.String _Address;
+        partial void OnAddressChanging(global::System.String value);
+        partial void OnAddressChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String PhoneNumber
+        {
+            get
+            {
+                return _PhoneNumber;
+            }
+            set
+            {
+                OnPhoneNumberChanging(value);
+                ReportPropertyChanging("PhoneNumber");
+                _PhoneNumber = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("PhoneNumber");
+                OnPhoneNumberChanged();
+            }
+        }
+        private global::System.String _PhoneNumber;
+        partial void OnPhoneNumberChanging(global::System.String value);
+        partial void OnPhoneNumberChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String OpeningHours
+        {
+            get
+            {
+                return _OpeningHours;
+            }
+            set
+            {
+                OnOpeningHoursChanging(value);
+                ReportPropertyChanging("OpeningHours");
+                _OpeningHours = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("OpeningHours");
+                OnOpeningHoursChanged();
+            }
+        }
+        private global::System.String _OpeningHours;
+        partial void OnOpeningHoursChanging(global::System.String value);
+        partial void OnOpeningHoursChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
         public global::System.String SiteHash
         {
             get
@@ -839,6 +959,85 @@ namespace LunchCrawler.Data.Local
         private Nullable<global::System.DateTime> _DateUpdated;
         partial void OnDateUpdatedChanging(Nullable<global::System.DateTime> value);
         partial void OnDateUpdatedChanged();
+
+        #endregion
+    
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="SearchKeyword")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class SearchKeyword : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new SearchKeyword object.
+        /// </summary>
+        /// <param name="searchKeyword1">Initial value of the SearchKeyword1 property.</param>
+        public static SearchKeyword CreateSearchKeyword(global::System.String searchKeyword1)
+        {
+            SearchKeyword searchKeyword = new SearchKeyword();
+            searchKeyword.SearchKeyword1 = searchKeyword1;
+            return searchKeyword;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String SearchKeyword1
+        {
+            get
+            {
+                return _SearchKeyword1;
+            }
+            set
+            {
+                if (_SearchKeyword1 != value)
+                {
+                    OnSearchKeyword1Changing(value);
+                    ReportPropertyChanging("SearchKeyword1");
+                    _SearchKeyword1 = StructuralObject.SetValidValue(value, false);
+                    ReportPropertyChanged("SearchKeyword1");
+                    OnSearchKeyword1Changed();
+                }
+            }
+        }
+        private global::System.String _SearchKeyword1;
+        partial void OnSearchKeyword1Changing(global::System.String value);
+        partial void OnSearchKeyword1Changed();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Decimal> SuccessRate
+        {
+            get
+            {
+                return _SuccessRate;
+            }
+            set
+            {
+                OnSuccessRateChanging(value);
+                ReportPropertyChanging("SuccessRate");
+                _SuccessRate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SuccessRate");
+                OnSuccessRateChanged();
+            }
+        }
+        private Nullable<global::System.Decimal> _SuccessRate;
+        partial void OnSuccessRateChanging(Nullable<global::System.Decimal> value);
+        partial void OnSuccessRateChanged();
 
         #endregion
     
