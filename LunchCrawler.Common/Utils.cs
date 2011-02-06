@@ -123,17 +123,7 @@ namespace LunchCrawler.Common
         public static string GetBaseUrl(string url)
         {
             var uri = new Uri(url);
-            var splitHostName = uri.Host.Split('.');
-            if (splitHostName.Length >= 2)
-            {
-                var baseUrl = string.Format("{0}.{1}{2}",
-                                            splitHostName[splitHostName.Length - 2],
-                                            splitHostName[splitHostName.Length - 1],
-                                            uri.LocalPath);
-                return baseUrl;
-            }
-            
-            return url;
+            return string.Format("{0}{1}", uri.Host, uri.LocalPath);
         }
     }
 }
