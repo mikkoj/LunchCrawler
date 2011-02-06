@@ -129,5 +129,27 @@ namespace LunchCrawler.Data.Local
                 throw;
             }
         }
+
+        public LunchMenuKeyword GetLunchMenuKeyword(string word)
+        {
+            try
+            {
+                using (var entityContext = new LunchEntities())
+                {
+                    return entityContext.LunchMenuKeywords
+                                        .FirstOrDefault(keyword => keyword.Word.Equals(word));
+                }
+            }
+            catch (UpdateException updateException)
+            {
+                var baseError = updateException.GetBaseException();
+                if (baseError.Message.Contains("not unique"))
+                {
+                    return null;
+                }
+
+                throw;
+            }
+        }
     }
 }

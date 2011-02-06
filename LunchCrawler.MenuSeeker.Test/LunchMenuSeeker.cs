@@ -60,7 +60,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 LunchDA.Instance.UpdateWithPotentialLunchMenu(url, potentialMenu);
                 return;
             }
-
+            
             var scores = GetScoresForHtmlDocument(lunchMenuDocument);
             PrintScores((LunchMenuStatus)potentialMenu.Status, scores);
             
@@ -114,7 +114,7 @@ namespace LunchCrawler.MenuSeeker.Test
             foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))
             {
                 var consoledata = Utils.CleanContentForConsole(scorePoint.DetectedText);
-                Console.WriteLine("  {0,2:00}: {1}\t -> {2}",
+                Console.WriteLine("{0,2:00}: {1}\t -> {2}",
                                   scorePoint.PointsGiven,
                                   scorePoint.DetectedKeyword,
                                   consoledata);
