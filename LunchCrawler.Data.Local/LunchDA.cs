@@ -88,14 +88,14 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public void UpdateWithPotentialLunchMenu(string url, PotentialLunchMenu lunchMenu)
+        public void UpdateWithPotentialLunchMenu(PotentialLunchMenu lunchMenu)
         {
             try
             {
                 using (var entityContext = new LunchEntities())
                 {
                     var existingUrl = entityContext.PotentialLunchMenus
-                                                   .FirstOrDefault(menu => menu.URL.Equals(url));
+                                                   .FirstOrDefault(menu => menu.URL.Equals(lunchMenu.URL));
                     if (existingUrl != null)
                     {
                         existingUrl.Status = lunchMenu.Status;

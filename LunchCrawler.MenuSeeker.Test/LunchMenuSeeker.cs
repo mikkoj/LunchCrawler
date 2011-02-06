@@ -47,7 +47,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
             var potentialMenu = new PotentialLunchMenu
             {
-                URL = url,
+                URL = Utils.GetBaseUrl(url),
                 Status = (int)LunchMenuStatus.OK,
             };
 
@@ -57,7 +57,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 // no special error handling for now, any HTTP error -> can't connect
                 potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
                 PrintScores(LunchMenuStatus.CannotConnect, new LunchMenuScores());
-                LunchDA.Instance.UpdateWithPotentialLunchMenu(url, potentialMenu);
+                LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
                 return;
             }
             
@@ -66,7 +66,7 @@ namespace LunchCrawler.MenuSeeker.Test
             
             // ..and let's finish the potential menu object and update the DB
             CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
-            LunchDA.Instance.UpdateWithPotentialLunchMenu(url, potentialMenu);
+            LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
         }
 
 
