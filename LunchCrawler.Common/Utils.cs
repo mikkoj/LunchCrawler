@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 using System.Text;
 using System.Security.Cryptography;
@@ -26,6 +25,13 @@ namespace LunchCrawler.Common
             }
         }
 
+
+        public static bool IsLink(HtmlNode node)
+        {
+            return node.NodeType == HtmlNodeType.Element && node.Name == "a" && node.Attributes["href"] != null;
+        }
+
+
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url)
         {
             var document = new LunchMenuDocument();
@@ -33,6 +39,7 @@ namespace LunchCrawler.Common
 
             const int buffsize = 1024;
 
+            // TODO: timeout & joillain response codeilla 1x retry (?)
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(url);
@@ -63,7 +70,7 @@ namespace LunchCrawler.Common
 
             if (htmlDoc.ParseErrors != null && htmlDoc.ParseErrors.Count() > 0)
             {
-                // handle any parse errors
+                // TODO: handle any parse errors
             }
             
             if (htmlDoc.DocumentNode != null)

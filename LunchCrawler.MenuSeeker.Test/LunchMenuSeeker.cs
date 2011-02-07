@@ -1,56 +1,56 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
-using HtmlAgilityPack;
-
 using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
+using LunchCrawler.Common.Interfaces;
+using LunchCrawler.Common.Logging;
 using LunchCrawler.Data.Local;
 using LunchCrawler.MenuSeeker.Test.Model;
-using Google.API.Search;
+
 
 namespace LunchCrawler.MenuSeeker.Test
 {
-    public static class LunchMenuSeeker
+    [Export(typeof(ILunchMenuSeeker))]
+    public class LunchMenuSeeker : ILunchMenuSeeker
     {
+        public ILogger Logger { get; set; }
+
+        public LunchMenuSeeker()
+        {
+            Logger = NullLogger.Instance;
+        }
+
+        private readonly ILunchMenuSearchEngine _searchEngine;
+
+        /// <summary>
+        /// MEF uses this constructor for composing.
+        /// </summary>
+        /// <param name="searchEngine"></param>
+        [ImportingConstructor]
+        public LunchMenuSeeker(ILunchMenuSearchEngine searchEngine)
+        {
+            Logger = NullLogger.Instance;
+            _searchEngine = searchEngine;
+        }
+
         private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
 
-        private static bool IsLink(HtmlNode node) 
+        public void SeekLunchMenus()
         {
-            return node.NodeType == HtmlNodeType.Element && node.Name == "a" && node.Attributes["href"] != null;
-        }
-
-        public static void SearchLuncMenusRaw()
-        {
-            string query = "http://www.google.com/search?as_q=lounaslista&num=100&hl=fi";
-            var lunchpages = Utils.GetLunchMenuDocumentForUrl(query);
-
-            if (lunchpages != null)
+            if (_searchEngine == null)
             {
-                var urls = lunchpages.HtmlDocument
-                                     .DocumentNode
-                                     .DescendantNodes()
-                                     .Where(IsLink)
-                                     .Select(node => node.Attributes["href"].Value)
-                                     .Where(link => link.StartsWith("http://") && !link.ToLower().Contains("google"));
-
-                foreach (var url in urls)
-                    ScoreLunchMenu(url);
+                Logger.Fatal("Search engine not initialized!");
+                return;
             }
-        }
-
-        public static void SeekLunchMenus()
-        {
-            GwebSearchClient gclient = new GwebSearchClient("mysite");
-            var lunchpages = gclient.Search("lounaslista turku", 1000);         
-
-            if (lunchpages != null)
-            {
-                foreach (var res in lunchpages)
-                    ScoreLunchMenu(res.Url);
-            }
+            
+            // TODO: search queries from a table
+            var queries = new[] { "lounaslista turku", "lounaslista helsinki" };
+            var lunchMenuUrls = _searchEngine.SearchForLunchMenuURLs(queries);
+            lunchMenuUrls.ForEach(ScoreLunchMenu);
         }
 
         public static void ScoreLunchMenu(string url)
