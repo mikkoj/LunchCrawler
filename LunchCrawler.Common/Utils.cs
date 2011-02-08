@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 using System.Text;
 using System.Security.Cryptography;
@@ -42,7 +44,7 @@ namespace LunchCrawler.Common
             // TODO: timeout & joillain response codeilla 1x retry (?)
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(url);
+                var request = (HttpWebRequest)WebRequest.Create(GetUri(url));
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
@@ -82,6 +84,21 @@ namespace LunchCrawler.Common
             }
 
             return document;
+        }
+
+        /// <summary>
+        /// Adds http:// for an Uri if needed.
+        /// </summary>
+        private static Uri GetUri(string url)
+        {
+            Uri resultUri;
+            if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out resultUri))
+            {
+                return resultUri;
+            }
+
+            var resultUrl = url.StartsWith("http") ? url : string.Format("http://{0}", url);
+            return new Uri(resultUrl);
         }
 
 
@@ -137,6 +154,29 @@ namespace LunchCrawler.Common
             catch (FormatException)
             {
                 return url;
+            }
+        }
+
+
+        /// <summary>
+        /// Creates a deep-clone of any given object.
+        /// </summary>
+        /// <typeparam name="T">Type of the object.</typeparam>
+        /// <param name="obj">Object to be deep-cloned.</param>
+        /// <returns>A deep-clone of the object.</returns>
+        public static T DeepClone<T>(this T obj) where T : new()
+        {
+            if (!typeof(T).IsSerializable && !(typeof(T) is ISerializable))
+            {
+                throw new InvalidOperationException("A serializable Type is required");
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+                return (T)formatter.Deserialize(ms);
             }
         }
     }

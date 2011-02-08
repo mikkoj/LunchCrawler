@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition.Primitives;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
@@ -18,6 +19,7 @@ namespace LunchCrawler.MenuSeeker.Test
         {
             var container = BuildComponentContainer();
             var lunchMenuSeeker = container.Resolve<ILunchMenuSeeker>();
+            //container.InjectUnsetProperties(lunchMenuSeeker);
             lunchMenuSeeker.SeekLunchMenus();
 
             Console.ReadLine();
@@ -36,7 +38,8 @@ namespace LunchCrawler.MenuSeeker.Test
             builder.RegisterModule(new LoggingInjectModule(new NLogFactory()));
 
             // let's create the catalog based on the types in the assembly
-            var catalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            var catalog = new AssemblyCatalog(executingAssembly);
 
             // let's register the MEF catalog
             builder.RegisterComposablePartCatalog(catalog);

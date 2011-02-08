@@ -44,6 +44,9 @@
     <Reference Include="Autofac.Integration.Mef">
       <HintPath>..\packages\Autofac.Mef.2.4.4.705\lib\NET40\Autofac.Integration.Mef.dll</HintPath>
     </Reference>
+    <Reference Include="Bing">
+      <HintPath>..\packages\Bing.dll</HintPath>
+    </Reference>
     <Reference Include="GoogleSearchAPI">
       <HintPath>..\packages\GoogleSearchAPI.dll</HintPath>
     </Reference>
@@ -61,8 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SearchEngines\FooSearchEngine.cs" />
-    <Compile Include="SearchEngines\BlaaSearchEngine.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SearchEngines\BingSearchEngine.cs" />
     <Compile Include="SearchEngines\GoogleSearchEngine.cs" />
     <Compile Include="LunchMenuDetection.cs" />
     <Compile Include="Model\LunchMenuScorePoint.cs" />
@@ -71,6 +78,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LunchMenuSearchEngine.cs" />
+    <Compile Include="SearchKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LunchCrawler.Common\LunchCrawler.Common.csproj">
@@ -86,7 +94,13 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

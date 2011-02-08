@@ -83,6 +83,8 @@ namespace LunchCrawler.Common.IoC
                 // must have get/set, or only set
                 .Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void));
 
+            var properties = loggerProperties.ToList();
+
             // return an IEnumerable of actions that resolve a logger and assign the property
             return loggerProperties
                    .Select(entry => entry.PropertyInfo)

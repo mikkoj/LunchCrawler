@@ -1,8 +1,9 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Text;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
@@ -39,6 +40,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
         private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
         private static readonly IEnumerable<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
+        private static readonly IEnumerable<string> SearchKeywordsRecursive = CreateSearchQueriesRecursivePurkka(LunchDA.Instance.GetAllSearchKeywords());
 
         private static IEnumerable<string> CreateSearchQueries(IEnumerable<SearchKeyword> keywords)
         {
@@ -47,6 +49,42 @@ namespace LunchCrawler.MenuSeeker.Test
             var op = partition.Aggregate(results, (cur, group) => (group.Aggregate(results, (catwords, resword) => catwords.Select(word => word + " " + resword.QueryKeyword).ToList())));
             return op.AsEnumerable();
         }
+
+
+        private static IEnumerable<string> CreateSearchQueriesRecursivePurkka(IEnumerable<SearchKeyword> keywords,
+                                                                              List<string> permutations = null,
+                                                                              int currentCategoryDepth = 1)
+        {
+            if (permutations == null)
+            {
+                permutations = new List<string>();
+            }
+
+            // let's calculate the depth
+            var maxCategory = keywords.Max(keyword => keyword.Category);
+
+            if (currentCategoryDepth < maxCategory)
+            {
+                // let's find the keywords for current category depth - or use recursive ones
+                var keywordsForCategory = permutations.Count > 0 ?
+                                              permutations :
+                                              keywords.Where(keyword => keyword.Category == currentCategoryDepth)
+                                                      .Select(k => k.QueryKeyword);
+
+                // let's get the keyword combos for this category depth
+                var keywordCombosForCategory = (from currentWord in keywordsForCategory
+                                                from nextWord in keywords.Where(keyword => keyword.Category == (currentCategoryDepth + 1))
+                                                select string.Format("{0} {1}", currentWord, nextWord.QueryKeyword)).ToList();
+
+                // add rest recursively
+                permutations.AddRange(CreateSearchQueriesRecursivePurkka(keywords,
+                                                                         keywordCombosForCategory,
+                                                                         currentCategoryDepth + 1));
+            }
+
+            return permutations;
+        }
+
 
         public void SeekLunchMenus()
         {
@@ -59,13 +97,12 @@ namespace LunchCrawler.MenuSeeker.Test
             // TODO: search queries from a table
             var queries = new[] { "lounaslista turku", "lounaslista helsinki" };
             var lunchMenuUrls = _searchEngine.SearchForLunchMenuURLs(queries);
-            lunchMenuUrls.ForEach(ScoreLunchMenu);
+            //lunchMenuUrls.ForEach(ScoreLunchMenu);
+            Parallel.ForEach(lunchMenuUrls, ScoreLunchMenu);
         }
 
-        public static void ScoreLunchMenu(string url)
+        public void ScoreLunchMenu(string url)
         {
-            Console.WriteLine("-> {0}\n", url);
-
             var potentialMenu = new PotentialLunchMenu
             {
                 URL = Utils.GetBaseUrl(url),
@@ -82,13 +119,13 @@ namespace LunchCrawler.MenuSeeker.Test
                 {
                     // no special error handling for now, any HTTP error -> can't connect
                     potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
-                    PrintScores(LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                    LogLunchMenuScores(url, LunchMenuStatus.CannotConnect, new LunchMenuScores());
                     LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
                     return;
                 }
 
                 var scores = GetScoresForHtmlDocument(lunchMenuDocument);
-                PrintScores((LunchMenuStatus)potentialMenu.Status, scores);
+                LogLunchMenuScores(url, (LunchMenuStatus)potentialMenu.Status, scores);
 
                 // ..and let's finish the potential menu object and update the DB
                 CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
@@ -117,6 +154,7 @@ namespace LunchCrawler.MenuSeeker.Test
             };
         }
 
+
         private static void CompletePotentialLunchMenu(LunchMenuDocument lunchMenuDocument, PotentialLunchMenu potentialMenu, LunchMenuScores scores)
         {
             potentialMenu.SiteHash = lunchMenuDocument.Hash;
@@ -129,25 +167,33 @@ namespace LunchCrawler.MenuSeeker.Test
             potentialMenu.FuzzyKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
         }
 
-        private static void PrintScores(LunchMenuStatus status, LunchMenuScores scores)
+
+        public void LogLunchMenuScores(string url, LunchMenuStatus status, LunchMenuScores scores)
         {
             Console.OutputEncoding = Encoding.Default;
 
-            Console.WriteLine("- status: {0} - total points: {1} - lunch menu probability: {2:P}",
-                              status,              
-                              scores.Points.Sum(p => p.PointsGiven),
-                              scores.LunchMenuProbability);
+            var scoreBuilder = new StringBuilder();
+
+            scoreBuilder.AppendFormat("\n Scores for URL: {0}\n", url);
+            scoreBuilder.AppendFormat("- status: {0} - total points: {1} - lunch menu probability: {2:P}\n",
+                                         status,
+                                         scores.Points.Sum(p => p.PointsGiven),
+                                         scores.LunchMenuProbability);
 
             foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))
             {
                 var consoledata = Utils.CleanContentForConsole(scorePoint.DetectedText);
-                Console.WriteLine("{0,2:00}: {1}\t -> {2}",
-                                  scorePoint.PointsGiven,
-                                  scorePoint.DetectedKeyword,
-                                  consoledata);
+                scoreBuilder.AppendFormat("{0,2:00}: {1}\t -> {2}\n",
+                                             scorePoint.PointsGiven,
+                                             scorePoint.DetectedKeyword,
+                                             consoledata);
             }
 
-            Console.WriteLine("\n\n--------------------------------------------------------------\n");
+            var lunchMenuScores = scoreBuilder.ToString();
+            Logger.Info(lunchMenuScores);
+
+            scoreBuilder.AppendLine("\n\n--------------------------------------------------------------\n");
+            Console.WriteLine(scoreBuilder.ToString());
         }
     }
 }
