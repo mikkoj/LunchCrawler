@@ -3,9 +3,15 @@
   <Profiles />
   <Settings>
     <Setting Name="BingSearchLimit" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">120</Value>
+      <Value Profile="(Default)">200</Value>
     </Setting>
     <Setting Name="BingSearchCountForOneSearch" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="YahooSearchLimit" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="YahooSearchCountForOneSearch" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">50</Value>
     </Setting>
   </Settings>

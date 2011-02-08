@@ -13,7 +13,7 @@ using LunchCrawler.MenuSeeker.Test.Properties;
 namespace LunchCrawler.MenuSeeker.Test.SearchEngines
 {
     /// <summary>
-    /// Search engine for lunch menus based on Google's APIs.
+    /// Search engine for lunch menus based on Bing's APIs.
     /// </summary>
     [Export(typeof(ISearchEngine))]
     public class BingSearchEngine : ISearchEngine
@@ -36,7 +36,8 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
             var offset = 0;
             while (offset < _bingSearchLimit)
             {
-                allResults.AddRange(SingleBingSearch(query, _bingSearchCountForOneSearch, offset));
+                var singleSearchResults = SingleBingSearch(query, _bingSearchCountForOneSearch, offset);
+                allResults.AddRange(singleSearchResults ?? new List<string>());
                 offset += _bingSearchCountForOneSearch;
             }
 

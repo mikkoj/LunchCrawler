@@ -25,7 +25,7 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("120")]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
         public int BingSearchLimit {
             get {
                 return ((int)(this["BingSearchLimit"]));
@@ -38,6 +38,24 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
         public int BingSearchCountForOneSearch {
             get {
                 return ((int)(this["BingSearchCountForOneSearch"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public int YahooSearchLimit {
+            get {
+                return ((int)(this["YahooSearchLimit"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int YahooSearchCountForOneSearch {
+            get {
+                return ((int)(this["YahooSearchCountForOneSearch"]));
             }
         }
     }

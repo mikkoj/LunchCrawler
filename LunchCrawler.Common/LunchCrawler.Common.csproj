@@ -73,7 +73,7 @@
     <Compile Include="Logging\NullLogger.cs" />
     <Compile Include="LunchMenuDocument.cs" />
     <Compile Include="UrlComparer.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Utils.Html.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +81,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <Compile Include="Utils.General.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

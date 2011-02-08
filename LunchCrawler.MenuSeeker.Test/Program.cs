@@ -1,14 +1,13 @@
 ﻿using System;
-using System.ComponentModel.Composition.Primitives;
 using System.Reflection;
 using System.ComponentModel.Composition.Hosting;
 
 using Autofac;
 using Autofac.Integration.Mef;
 
-using LunchCrawler.Common.Interfaces;
 using LunchCrawler.Common.IoC;
 using LunchCrawler.Common.Logging;
+using LunchCrawler.Common.Interfaces;
 
 
 namespace LunchCrawler.MenuSeeker.Test
@@ -19,7 +18,7 @@ namespace LunchCrawler.MenuSeeker.Test
         {
             var container = BuildComponentContainer();
             var lunchMenuSeeker = container.Resolve<ILunchMenuSeeker>();
-            //container.InjectUnsetProperties(lunchMenuSeeker);
+
             lunchMenuSeeker.SeekLunchMenus();
 
             Console.ReadLine();
@@ -44,8 +43,8 @@ namespace LunchCrawler.MenuSeeker.Test
             // let's register the MEF catalog
             builder.RegisterComposablePartCatalog(catalog);
 
-            // we'll have to register the LunchMenuSeeker separately to inject the Logging properties
-            builder.RegisterType<LunchMenuSeeker>().As<ILunchMenuSeeker>();
+            builder.RegisterType<LunchMenuSeeker>().As<ILunchMenuSeeker>().SingleInstance();
+            //builder.RegisterAssemblyTypes(executingAssembly).AsImplementedInterfaces();
 
             // finally, let's build and return the container
             return builder.Build();

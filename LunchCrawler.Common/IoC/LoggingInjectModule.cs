@@ -46,7 +46,7 @@ namespace LunchCrawler.Common.IoC
             var implementationType = registration.Activator.LimitType;
 
             // build an array of actions on this type to assign loggers to member properties
-            var injectors = BuildLoggerInjectors(implementationType).ToArray();
+            var injectors = BuildLoggerInjectors(implementationType).ToList();
 
             // if there are no logger properties, there's no reason to hook the activated event
             if (!injectors.Any())
@@ -57,6 +57,7 @@ namespace LunchCrawler.Common.IoC
             // otherwise, whan an instance of this component is activated, inject the loggers on the instance
             registration.Activated += (s, e) =>
             {
+                injectors.ForEach(injector => inje)
                 foreach (var injector in injectors)
                 {
                     injector(e.Context, e.Instance);
@@ -82,8 +83,6 @@ namespace LunchCrawler.Common.IoC
                 .Where(x => x.IndexParameters.Count() == 0)
                 // must have get/set, or only set
                 .Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void));
-
-            var properties = loggerProperties.ToList();
 
             // return an IEnumerable of actions that resolve a logger and assign the property
             return loggerProperties
