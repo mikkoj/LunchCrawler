@@ -60,10 +60,11 @@
         </EntityType>
         <EntityType Name="SearchKeywords">
           <Key>
-            <PropertyRef Name="SearchKeyword" />
+            <PropertyRef Name="QueryKeyword" />
           </Key>
-          <Property Name="SearchKeyword" Type="nvarchar" Nullable="false" MaxLength="250" />
+          <Property Name="QueryKeyword" Type="nvarchar" Nullable="false" MaxLength="250" />
           <Property Name="SuccessRate" Type="decimal" Precision="53" />
+          <Property Name="Category" Type="int" Nullable="false" />
         </EntityType>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -124,10 +125,11 @@
         </EntityType>
         <EntityType Name="SearchKeyword">
           <Key>
-            <PropertyRef Name="SearchKeyword1" />
+            <PropertyRef Name="QueryKeyword" />
           </Key>
-          <Property Type="String" Name="SearchKeyword1" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Type="Decimal" Name="SuccessRate" Precision="53" Scale="0" />
+          <Property Type="String" Name="QueryKeyword" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Category" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -180,8 +182,9 @@
           <EntitySetMapping Name="SearchKeywords">
             <EntityTypeMapping TypeName="LunchModel.SearchKeyword">
               <MappingFragment StoreEntitySet="SearchKeywords">
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="QueryKeyword" ColumnName="QueryKeyword" />
                 <ScalarProperty Name="SuccessRate" ColumnName="SuccessRate" />
-                <ScalarProperty Name="SearchKeyword1" ColumnName="SearchKeyword" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -210,7 +213,7 @@
         <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="3.25" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
         <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="2.25" PointX="0.625" PointY="0.75" Height="1.4279589843749996" />
         <EntityTypeShape EntityType="LunchModel.PotentialLunchMenu" Width="2" PointX="7.125" PointY="0.75" Height="3.4001269531249996" />
-        <EntityTypeShape EntityType="LunchModel.SearchKeyword" Width="1.5" PointX="0.75" PointY="2.875" Height="1.2636116536458317" />
+        <EntityTypeShape EntityType="LunchModel.SearchKeyword" Width="1.5" PointX="0.75" PointY="2.875" Height="1.5956835937499996" />
       </Diagram>
     </Diagrams>
   </Designer>

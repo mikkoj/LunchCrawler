@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-
+using LunchCrawler.Common;
 using LunchCrawler.Common.Interfaces;
 
 
@@ -27,7 +27,7 @@ namespace LunchCrawler.MenuSeeker.Test
         /// <param name="query">Query string to search with.</param>
         public List<string> SearchForLunchMenuURLs(string query)
         {
-            return SearchEngines.SelectMany(engine => engine.SearchForLinks(query) ?? new List<string>()).ToList();
+            return SearchEngines.SelectMany(engine => engine.SearchForLinks(query) ?? new List<string>()).Distinct(new UrlComparer()).ToList();
         }
 
 
@@ -37,7 +37,7 @@ namespace LunchCrawler.MenuSeeker.Test
         /// <param name="queries">Query-strings to search with.</param>
         public List<string> SearchForLunchMenuURLs(IList<string> queries)
         {
-            return queries.SelectMany(SearchForLunchMenuURLs).ToList();
+            return queries.SelectMany(SearchForLunchMenuURLs).Distinct(new UrlComparer()).ToList();
         }
     }
 }

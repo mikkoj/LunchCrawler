@@ -129,8 +129,15 @@ namespace LunchCrawler.Common
 
         public static string GetBaseUrl(string url)
         {
-            var uri = new Uri(url);
-            return string.Format("{0}{1}", uri.Host, uri.LocalPath);
+            try
+            {
+                var uri = new Uri(url);
+                return string.Format("{0}{1}", uri.Host, uri.LocalPath);
+            } 
+            catch (FormatException)
+            {
+                return url;
+            }
         }
     }
 }

@@ -977,43 +977,18 @@ namespace LunchCrawler.Data.Local
         /// <summary>
         /// Create a new SearchKeyword object.
         /// </summary>
-        /// <param name="searchKeyword1">Initial value of the SearchKeyword1 property.</param>
-        public static SearchKeyword CreateSearchKeyword(global::System.String searchKeyword1)
+        /// <param name="queryKeyword">Initial value of the QueryKeyword property.</param>
+        /// <param name="category">Initial value of the Category property.</param>
+        public static SearchKeyword CreateSearchKeyword(global::System.String queryKeyword, global::System.Int32 category)
         {
             SearchKeyword searchKeyword = new SearchKeyword();
-            searchKeyword.SearchKeyword1 = searchKeyword1;
+            searchKeyword.QueryKeyword = queryKeyword;
+            searchKeyword.Category = category;
             return searchKeyword;
         }
 
         #endregion
         #region Primitive Properties
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.String SearchKeyword1
-        {
-            get
-            {
-                return _SearchKeyword1;
-            }
-            set
-            {
-                if (_SearchKeyword1 != value)
-                {
-                    OnSearchKeyword1Changing(value);
-                    ReportPropertyChanging("SearchKeyword1");
-                    _SearchKeyword1 = StructuralObject.SetValidValue(value, false);
-                    ReportPropertyChanged("SearchKeyword1");
-                    OnSearchKeyword1Changed();
-                }
-            }
-        }
-        private global::System.String _SearchKeyword1;
-        partial void OnSearchKeyword1Changing(global::System.String value);
-        partial void OnSearchKeyword1Changed();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1038,6 +1013,57 @@ namespace LunchCrawler.Data.Local
         private Nullable<global::System.Decimal> _SuccessRate;
         partial void OnSuccessRateChanging(Nullable<global::System.Decimal> value);
         partial void OnSuccessRateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String QueryKeyword
+        {
+            get
+            {
+                return _QueryKeyword;
+            }
+            set
+            {
+                if (_QueryKeyword != value)
+                {
+                    OnQueryKeywordChanging(value);
+                    ReportPropertyChanging("QueryKeyword");
+                    _QueryKeyword = StructuralObject.SetValidValue(value, false);
+                    ReportPropertyChanged("QueryKeyword");
+                    OnQueryKeywordChanged();
+                }
+            }
+        }
+        private global::System.String _QueryKeyword;
+        partial void OnQueryKeywordChanging(global::System.String value);
+        partial void OnQueryKeywordChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 Category
+        {
+            get
+            {
+                return _Category;
+            }
+            set
+            {
+                OnCategoryChanging(value);
+                ReportPropertyChanging("Category");
+                _Category = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Category");
+                OnCategoryChanged();
+            }
+        }
+        private global::System.Int32 _Category;
+        partial void OnCategoryChanging(global::System.Int32 value);
+        partial void OnCategoryChanged();
 
         #endregion
     

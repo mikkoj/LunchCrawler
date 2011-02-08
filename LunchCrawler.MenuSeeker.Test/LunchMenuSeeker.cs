@@ -38,6 +38,15 @@ namespace LunchCrawler.MenuSeeker.Test
         }
 
         private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
+        private static readonly IEnumerable<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
+
+        private static IEnumerable<string> CreateSearchQueries(IEnumerable<SearchKeyword> keywords)
+        {
+            var partition = keywords.GroupBy(keyword => keyword.Category).OrderBy(group => group.Key);
+            var results = new List<string>(partition.FirstOrDefault().Select(word => word.QueryKeyword).ToList());
+            var op = partition.Aggregate(results, (cur, group) => (group.Aggregate(results, (catwords, resword) => catwords.Select(word => word + " " + resword.QueryKeyword).ToList())));
+            return op.AsEnumerable();
+        }
 
         public void SeekLunchMenus()
         {
@@ -63,22 +72,28 @@ namespace LunchCrawler.MenuSeeker.Test
                 Status = (int)LunchMenuStatus.OK,
             };
 
-            var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url);
-            if (lunchMenuDocument == null)
+            // Check if we already have this one
+            var existingMenu = LunchDA.Instance.FindPotentialLunchMenu(potentialMenu);
+
+            if (existingMenu == null || existingMenu.Status == (int)LunchMenuStatus.CannotConnect)
             {
-                // no special error handling for now, any HTTP error -> can't connect
-                potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
-                PrintScores(LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url);
+                if (lunchMenuDocument == null)
+                {
+                    // no special error handling for now, any HTTP error -> can't connect
+                    potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
+                    PrintScores(LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                    LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
+                    return;
+                }
+
+                var scores = GetScoresForHtmlDocument(lunchMenuDocument);
+                PrintScores((LunchMenuStatus)potentialMenu.Status, scores);
+
+                // ..and let's finish the potential menu object and update the DB
+                CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
                 LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
-                return;
             }
-            
-            var scores = GetScoresForHtmlDocument(lunchMenuDocument);
-            PrintScores((LunchMenuStatus)potentialMenu.Status, scores);
-            
-            // ..and let's finish the potential menu object and update the DB
-            CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
-            LunchDA.Instance.UpdateWithPotentialLunchMenu(potentialMenu);
         }
 
 

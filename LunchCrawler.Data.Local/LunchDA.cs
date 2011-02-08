@@ -52,7 +52,7 @@ namespace LunchCrawler.Data.Local
                 using (var entityContext = new LunchEntities())
                 {
                     var existingKeyword = entityContext.LunchMenuKeywords
-                                                       .FirstOrDefault(keyword => keyword.Word.Equals(word));
+                                                       .FirstOrDefault(keyword => keyword.Word.Equals(word, StringComparison.InvariantCultureIgnoreCase));
                     if (existingKeyword != null)
                     {
                         existingKeyword.DetectionCount = detectionCount;
@@ -88,14 +88,30 @@ namespace LunchCrawler.Data.Local
             }
         }
 
+        public IList<SearchKeyword> GetAllSearchKeywords()
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                return entityContext.SearchKeywords.ToList();
+            }
+        }
+
+        public PotentialLunchMenu FindPotentialLunchMenu(PotentialLunchMenu lunchMenu)
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                return entityContext.PotentialLunchMenus
+                                    .FirstOrDefault(menu => menu.URL.Equals(lunchMenu.URL, StringComparison.InvariantCultureIgnoreCase));
+            }
+        }
+
         public void UpdateWithPotentialLunchMenu(PotentialLunchMenu lunchMenu)
         {
             try
             {
                 using (var entityContext = new LunchEntities())
                 {
-                    var existingUrl = entityContext.PotentialLunchMenus
-                                                   .FirstOrDefault(menu => menu.URL.Equals(lunchMenu.URL));
+                    var existingUrl = FindPotentialLunchMenu(lunchMenu);
                     if (existingUrl != null)
                     {
                         existingUrl.Status = lunchMenu.Status;
@@ -137,7 +153,7 @@ namespace LunchCrawler.Data.Local
                 using (var entityContext = new LunchEntities())
                 {
                     return entityContext.LunchMenuKeywords
-                                        .FirstOrDefault(keyword => keyword.Word.Equals(word));
+                                        .FirstOrDefault(keyword => keyword.Word.Equals(word, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
             catch (UpdateException updateException)
