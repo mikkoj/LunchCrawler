@@ -16,6 +16,7 @@ namespace LunchCrawler.Common
     public static partial class Utils
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private static Encoding TryGetEncoding(string encoding)
         {
             try
@@ -88,7 +89,7 @@ namespace LunchCrawler.Common
                 document.HtmlDocument = htmlDoc;
 
                 // let's also compute a hash for the document
-                document.Hash = ComputeHashForDocument(htmlDoc);
+                document.Hash = ComputeHashForDocument(htmlDoc, url);
             }
 
             return document;
@@ -130,22 +131,33 @@ namespace LunchCrawler.Common
         }
 
 
-        private static string ComputeHashForDocument(HtmlDocument htmlDoc)
+        /// <summary>
+        /// Attempts to compute a hash for a HTML document.
+        /// </summary>
+        private static string ComputeHashForDocument(HtmlDocument htmlDoc, string url)
         {
-            var cleanDoc = new HtmlDocument();
-            cleanDoc.LoadHtml(htmlDoc.DocumentNode.InnerHtml);
+            try
+            {
+                var cleanDoc = new HtmlDocument();
+                cleanDoc.LoadHtml(htmlDoc.DocumentNode.InnerHtml);
 
-            var nodesToBeRemoved = cleanDoc.DocumentNode
-                                           .DescendantNodes()
-                                           .Where(ShouldSkipNode)
-                                           .ToList();
+                var nodesToBeRemoved = cleanDoc.DocumentNode
+                                               .DescendantNodes()
+                                               .Where(ShouldSkipNode)
+                                               .ToList();
 
-            nodesToBeRemoved.ForEach(node => cleanDoc.DocumentNode.RemoveChild(node, true));
+                nodesToBeRemoved.ForEach(node => cleanDoc.DocumentNode.RemoveChild(node, true));
 
-            var cleanHtml = cleanDoc.DocumentNode.InnerHtml.Trim();
-            var cleanBytes = Encoding.Unicode.GetBytes(cleanHtml);
-            var hasher = new SHA256Managed();
-            return BitConverter.ToString(hasher.ComputeHash(cleanBytes));
+                var cleanHtml = cleanDoc.DocumentNode.InnerHtml.Trim();
+                var cleanBytes = Encoding.Unicode.GetBytes(cleanHtml);
+                var hasher = new SHA256Managed();
+                return BitConverter.ToString(hasher.ComputeHash(cleanBytes));
+            }
+            catch (Exception exHash)
+            {
+                _logger.Error("Couldn't compute hash for URL: " + url, exHash);
+                return null;
+            }
         }
 
 
@@ -154,15 +166,20 @@ namespace LunchCrawler.Common
             return HttpUtility.HtmlDecode(text);
         }
 
+        /// <summary>
+        /// Determines whether a node should be skipped.
+        /// Checks for comments, child-nodes, scripts etc.
+        /// </summary>
         public static bool ShouldSkipNode(HtmlNode node)
         {
             var excludes = new[] { "script", "style" };
-            // only nodes without child-nodes, comments, scripts or root DOCUMENT-type
+
             return node.HasChildNodes ||
                    node.NodeType == HtmlNodeType.Comment ||
                    node.NodeType == HtmlNodeType.Document ||
                    (node.ParentNode != null && Array.Exists(excludes, exclude => node.ParentNode.Name.ToLower().Contains(exclude)));
         }
+
 
         public static string CleanContentForConsole(string content)
         {

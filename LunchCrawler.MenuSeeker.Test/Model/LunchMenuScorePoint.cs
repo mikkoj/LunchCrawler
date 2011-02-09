@@ -1,4 +1,6 @@
-﻿using LunchCrawler.Common.Enums;
+﻿using System;
+
+using LunchCrawler.Common.Enums;
 
 
 namespace LunchCrawler.MenuSeeker.Test.Model
