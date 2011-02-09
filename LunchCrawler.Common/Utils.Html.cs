@@ -28,11 +28,17 @@ namespace LunchCrawler.Common
 
         public static bool IsLink(HtmlNode node)
         {
-            return node.NodeType == HtmlNodeType.Element && node.Name == "a" && node.Attributes["href"] != null;
+            return node.NodeType == HtmlNodeType.Element && 
+                node.Name.Equals("a", StringComparison.InvariantCultureIgnoreCase) && 
+                node.Attributes.Contains("href");
         }
 
-
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url)
+        {
+            return GetLunchMenuDocumentForUrl(url, 10000);
+        }
+
+        public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url, int timeout)
         {
             var document = new LunchMenuDocument();
             var htmlDoc = new HtmlDocument();
@@ -43,6 +49,7 @@ namespace LunchCrawler.Common
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(GetUri(url));
+                request.Timeout = timeout;
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
@@ -115,7 +122,7 @@ namespace LunchCrawler.Common
                 return resultUri;
             }
 
-            var resultUrl = url.StartsWith("http") ? url : string.Format("http://{0}", url);
+            var resultUrl = url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) ? url : string.Format("http://{0}", url);
             return new Uri(resultUrl);
         }
 
@@ -166,7 +173,7 @@ namespace LunchCrawler.Common
         {
             try
             {
-                var uri = new Uri(url);
+                var uri = GetUri(url);
                 return string.Format("{0}{1}", uri.Host, uri.LocalPath);
             } 
             catch (FormatException)

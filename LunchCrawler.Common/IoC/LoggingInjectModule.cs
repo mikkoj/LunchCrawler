@@ -55,14 +55,8 @@ namespace LunchCrawler.Common.IoC
             }
 
             // otherwise, whan an instance of this component is activated, inject the loggers on the instance
-            registration.Activated += (s, e) =>
-            {
-                injectors.ForEach(injector => inje)
-                foreach (var injector in injectors)
-                {
-                    injector(e.Context, e.Instance);
-                }
-            };
+            registration.Activated += (s, e) => injectors.ForEach(injector => injector(e.Context, e.Instance));
+
         }
 
         private static IEnumerable<Action<IComponentContext, object>> BuildLoggerInjectors(IReflect componentType)

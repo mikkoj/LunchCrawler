@@ -39,52 +39,15 @@ namespace LunchCrawler.MenuSeeker.Test
         }
 
         private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
-        private static readonly IEnumerable<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
-        private static readonly IEnumerable<string> SearchKeywordsRecursive = CreateSearchQueriesRecursivePurkka(LunchDA.Instance.GetAllSearchKeywords());
+        private static readonly IList<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
 
-        private static IEnumerable<string> CreateSearchQueries(IEnumerable<SearchKeyword> keywords)
+        private static IList<string> CreateSearchQueries(IEnumerable<SearchKeyword> keywords)
         {
             var partition = keywords.GroupBy(keyword => keyword.Category).OrderBy(group => group.Key);
-            var results = new List<string>(partition.FirstOrDefault().Select(word => word.QueryKeyword).ToList());
-            var op = partition.Aggregate(results, (cur, group) => (group.Aggregate(results, (catwords, resword) => catwords.Select(word => word + " " + resword.QueryKeyword).ToList())));
-            return op.AsEnumerable();
+            var accu = new List<string>();
+            var merged = partition.Scan(accu, (cur, group) => cur.MergeContents(group.Select(x => x.QueryKeyword), (str1, str2) => str1 + " " + str2).ToList());
+            return merged.Skip(partition.Count() > 1 ? 1 : 0).SelectMany(x => x).ToList();
         }
-
-
-        private static IEnumerable<string> CreateSearchQueriesRecursivePurkka(IEnumerable<SearchKeyword> keywords,
-                                                                              List<string> permutations = null,
-                                                                              int currentCategoryDepth = 1)
-        {
-            if (permutations == null)
-            {
-                permutations = new List<string>();
-            }
-
-            // let's calculate the depth
-            var maxCategory = keywords.Max(keyword => keyword.Category);
-
-            if (currentCategoryDepth < maxCategory)
-            {
-                // let's find the keywords for current category depth - or use recursive ones
-                var keywordsForCategory = permutations.Count > 0 ?
-                                              permutations :
-                                              keywords.Where(keyword => keyword.Category == currentCategoryDepth)
-                                                      .Select(k => k.QueryKeyword);
-
-                // let's get the keyword combos for this category depth
-                var keywordCombosForCategory = (from currentWord in keywordsForCategory
-                                                from nextWord in keywords.Where(keyword => keyword.Category == (currentCategoryDepth + 1))
-                                                select string.Format("{0} {1}", currentWord, nextWord.QueryKeyword)).ToList();
-
-                // add rest recursively
-                permutations.AddRange(CreateSearchQueriesRecursivePurkka(keywords,
-                                                                         keywordCombosForCategory,
-                                                                         currentCategoryDepth + 1));
-            }
-
-            return permutations;
-        }
-
 
         public void SeekLunchMenus()
         {
@@ -94,9 +57,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 return;
             }
             
-            // TODO: search queries from a table
-            var queries = new[] { "lounaslista turku", "lounaslista helsinki" };
-            var lunchMenuUrls = _searchEngine.SearchForLunchMenuURLs(queries);
+            var lunchMenuUrls = _searchEngine.SearchForLunchMenuURLs(SearchKeywords);
             //lunchMenuUrls.ForEach(ScoreLunchMenu);
             Parallel.ForEach(lunchMenuUrls, ScoreLunchMenu);
         }

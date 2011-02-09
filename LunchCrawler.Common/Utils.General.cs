@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
@@ -43,6 +44,38 @@ namespace LunchCrawler.Common
                 formatter.Serialize(ms, obj);
                 ms.Position = 0;
                 return (T)formatter.Deserialize(ms);
+            }
+        }
+
+        public static IEnumerable<T> MergeContents<T>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, T, T> mergeop)
+        {
+            if (mergeop == null)
+                throw new ArgumentNullException("mergeop");
+
+            if (source == null || source.Count() == 0)
+                return other;
+            else if (other == null || other.Count() == 0)
+                return source;
+
+            return source.SelectMany(item => other.Select(item2 => mergeop(item, item2)));
+        }
+
+        public static IEnumerable<TAcc> Scan<T, TAcc>(this IEnumerable<T> source, TAcc seed, Func<TAcc, T, TAcc> transformation)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (transformation == null)
+                throw new ArgumentNullException("transformation");
+
+            using (var i = source.GetEnumerator())
+            {
+                var newseed = seed;
+                while (i.MoveNext())
+                {
+                    newseed = transformation(newseed, i.Current);
+                    yield return newseed;
+                }
             }
         }
 	}
