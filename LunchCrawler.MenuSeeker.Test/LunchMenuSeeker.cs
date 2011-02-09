@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Text;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -10,6 +12,7 @@ using LunchCrawler.Common.Interfaces;
 using LunchCrawler.Common.Logging;
 using LunchCrawler.Data.Local;
 using LunchCrawler.MenuSeeker.Test.Model;
+using LunchCrawler.MenuSeeker.Test.Properties;
 
 
 namespace LunchCrawler.MenuSeeker.Test
@@ -73,11 +76,11 @@ namespace LunchCrawler.MenuSeeker.Test
                                       .Distinct(new UrlComparer());
 
             Logger.InfoFormat("Started scoring total of {0} links..", allUrls.Count());
-            Parallel.ForEach(allUrls, ScoreLunchMenu);
+            Parallel.ForEach(allUrls, url => ScoreLunchMenu(url));
         }
 
 
-        public void ScoreLunchMenu(string url)
+        public void ScoreLunchMenu(string url, int retryCount = 0)
         {
             var potentialMenu = new LunchMenu
             {
@@ -86,27 +89,49 @@ namespace LunchCrawler.MenuSeeker.Test
                 Status = (int)LunchMenuStatus.OK,
             };
 
-            // Check if we already have this one
-            var existingMenu = LunchDA.Instance.FindExistingLunchMenu(potentialMenu.URL);
-
-            if (existingMenu == null || existingMenu.Status == (int)LunchMenuStatus.CannotConnect)
+            try
             {
-                var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url);
-                if (lunchMenuDocument == null)
+                // Check if we already have this one
+                var existingMenu = LunchDA.Instance.FindExistingLunchMenu(potentialMenu.URL);
+
+                if (existingMenu == null || existingMenu.Status == (int) LunchMenuStatus.CannotConnect)
                 {
-                    // no special error handling for now, any HTTP error -> can't connect
-                    potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
-                    LogLunchMenuScores(url, LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                    var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url);
+                    if (lunchMenuDocument == null)
+                    {
+                        // no special error handling for now, any HTTP error -> can't connect
+                        potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
+                        LogLunchMenuScores(url, LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                        LunchDA.Instance.UpdateLunchMenu(potentialMenu);
+                        return;
+                    }
+
+                    var scores = GetScoresForHtmlDocument(lunchMenuDocument);
+                    LogLunchMenuScores(url, (LunchMenuStatus)potentialMenu.Status, scores);
+
+                    // ..and let's finish the potential menu object and update the DB
+                    CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
                     LunchDA.Instance.UpdateLunchMenu(potentialMenu);
-                    return;
                 }
+            }
+            catch (EntityException entityEx)
+            {
+                var errorMessage = entityEx.ParseInnerError();
+                if (errorMessage.ToLowerInvariant().Contains("database is locked"))
+                {
+                    if (retryCount > 0)
+                    {
+                        return;
+                    }
 
-                var scores = GetScoresForHtmlDocument(lunchMenuDocument);
-                LogLunchMenuScores(url, (LunchMenuStatus)potentialMenu.Status, scores);
-
-                // ..and let's finish the potential menu object and update the DB
-                CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
-                LunchDA.Instance.UpdateLunchMenu(potentialMenu);
+                    // retry
+                    Thread.Sleep(1000);
+                    ScoreLunchMenu(url, 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal("Error scoring document for URL: " + url, ex);
             }
         }
 
@@ -142,6 +167,11 @@ namespace LunchCrawler.MenuSeeker.Test
             potentialMenu.ExactKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Exact);
             potentialMenu.PartialKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Partial);
             potentialMenu.FuzzyKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
+
+            if (scores.LunchMenuProbability < Settings.Default.LunchMenuProbabilityLimit)
+            {
+                potentialMenu.Status = (int)LunchMenuStatus.ShouldSkip;
+            }
         }
 
 
@@ -166,11 +196,9 @@ namespace LunchCrawler.MenuSeeker.Test
                                           consoledata);
             }
 
+            scoreBuilder.AppendLine("\r\n\r\n--------------------------------------------------------------\n");
             var lunchMenuScores = scoreBuilder.ToString();
             Logger.Info(lunchMenuScores);
-
-            scoreBuilder.AppendLine("\n\n--------------------------------------------------------------\n");
-            Console.WriteLine(scoreBuilder.ToString());
         }
     }
 }

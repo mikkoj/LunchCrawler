@@ -8,11 +8,14 @@ using System.Security.Cryptography;
 
 using HtmlAgilityPack;
 
+using NLog;
+
 
 namespace LunchCrawler.Common
 {
     public static partial class Utils
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
         private static Encoding TryGetEncoding(string encoding)
         {
             try

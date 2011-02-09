@@ -90,7 +90,7 @@ namespace LunchCrawler.Analyzer.Test
                 feature.Line = node.Line;
                 feature.LinePosition = node.LinePosition;
                 feature.InnerText = node.InnerText;
-                feature.OuterHtml = node.OuterHtml;
+                //feature.OuterHtml = node.OuterHtml;
                 feature.DetectedNode = node;
             }
 

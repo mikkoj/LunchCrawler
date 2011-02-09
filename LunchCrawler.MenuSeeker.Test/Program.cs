@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 
 using Autofac;
 
@@ -15,6 +16,8 @@ namespace LunchCrawler.MenuSeeker.Test
     {
         static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
+
             var container = BuildComponentContainer();
             var lunchMenuSeeker = container.Resolve<ILunchMenuSeeker>();
 
@@ -22,13 +25,30 @@ namespace LunchCrawler.MenuSeeker.Test
             var watch = new Stopwatch();
             watch.Start();
 
-            lunchMenuSeeker.SeekLunchMenus();
+            try
+            {
+                const int maxStackSize = 10485760; // 10MB
+                var task = new ThreadStart(lunchMenuSeeker.SeekLunchMenus);
+                var thread = new Thread(task, maxStackSize);
+                thread.Start();
+            }
+            catch (OutOfMemoryException ex)
+            {
+                // ..
+            }
+            catch (Exception ex)
+            {
+                // ..
+            }
+
+            //lunchMenuSeeker.SeekLunchMenus();
 
             watch.Stop();
             
             Console.WriteLine("\n\nLunch menu seeking done in {0}", watch.Elapsed);
             Console.ReadLine();
         }
+
 
         /// <summary>
         /// Uses dependency injection to build an Autofac container for the assembly.
@@ -47,6 +67,19 @@ namespace LunchCrawler.MenuSeeker.Test
 
             // finally, let's build and return the container
             return builder.Build();
+        }
+
+
+        static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            if (ex == null)
+            {
+                Console.WriteLine("Unknown error occurred");
+                return;
+            }
+
+            Console.WriteLine("Unknown error: " + ex.Message);
         }
     }
 }

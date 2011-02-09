@@ -825,7 +825,8 @@
             The original unaltered name of the tag
             </summary>
         </member>
-        <member name="P:HtmlAgilityPack.HtmlNode.OuterHtml">
+        <member name="P:HtmlAgilityPack.HtmlNode.
+                ">
             <summary>
             Gets or Sets the object and its content in HTML.
             </summary>

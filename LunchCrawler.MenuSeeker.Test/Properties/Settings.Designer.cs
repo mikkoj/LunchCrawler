@@ -58,5 +58,14 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
                 return ((int)(this["YahooSearchCountForOneSearch"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.75")]
+        public decimal LunchMenuProbabilityLimit {
+            get {
+                return ((decimal)(this["LunchMenuProbabilityLimit"]));
+            }
+        }
     }
 }

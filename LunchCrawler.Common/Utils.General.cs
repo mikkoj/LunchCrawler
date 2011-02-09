@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 
 namespace LunchCrawler.Common
@@ -77,6 +78,22 @@ namespace LunchCrawler.Common
                     yield return newseed;
                 }
             }
+        }
+
+        public static string ParseInnerError(this Exception ex)
+        {
+            if (ex == null || string.IsNullOrEmpty(ex.Message))
+            {
+                return string.Empty;
+            }
+
+            var error = new StringBuilder(ex.Message);
+            if (ex.InnerException != null)
+            {
+                error.Append("\n" + ParseInnerError(ex.InnerException));
+            }
+
+            return error.ToString();
         }
 	}
 }
