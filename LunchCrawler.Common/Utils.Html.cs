@@ -38,7 +38,7 @@ namespace LunchCrawler.Common
 
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url)
         {
-            return GetLunchMenuDocumentForUrl(url, 10000);
+            return GetLunchMenuDocumentForUrl(url, 10);
         }
 
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url, int timeout)
@@ -52,7 +52,7 @@ namespace LunchCrawler.Common
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(GetUri(url));
-                request.Timeout = timeout;
+                request.Timeout = timeout * 1000;
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
