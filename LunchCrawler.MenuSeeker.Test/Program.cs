@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
 
 using Autofac;
 
@@ -25,23 +24,7 @@ namespace LunchCrawler.MenuSeeker.Test
             var watch = new Stopwatch();
             watch.Start();
 
-            try
-            {
-                const int maxStackSize = 10485760; // 10MB
-                var task = new ThreadStart(lunchMenuSeeker.SeekLunchMenus);
-                var thread = new Thread(task, maxStackSize);
-                thread.Start();
-            }
-            catch (OutOfMemoryException ex)
-            {
-                // ..
-            }
-            catch (Exception ex)
-            {
-                // ..
-            }
-
-            //lunchMenuSeeker.SeekLunchMenus();
+            lunchMenuSeeker.Start();
 
             watch.Stop();
             

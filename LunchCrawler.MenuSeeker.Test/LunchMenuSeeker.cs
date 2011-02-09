@@ -17,6 +17,7 @@ using LunchCrawler.MenuSeeker.Test.Properties;
 
 namespace LunchCrawler.MenuSeeker.Test
 {
+    [Serializable]
     public class LunchMenuSeeker : ILunchMenuSeeker
     {
         public ILogger Logger { get; set; }
@@ -53,6 +54,41 @@ namespace LunchCrawler.MenuSeeker.Test
             return merged.Skip(partition.Count() > 1 ? 1 : 0)
                          .SelectMany(x => x)
                          .ToList();
+        }
+
+
+        /// <summary>
+        /// Starts the seeking process in a separate thread.
+        /// Aborts the mission after specified timeout.
+        /// </summary>
+        public void Start()
+        {
+            // timeout for thread to abort
+            const double timeoutMinutes = 60;
+
+            // maximum stack size for thread (10MB)
+            const int maxStackSize = 10485760;
+
+            try
+            {
+                var task = new ThreadStart(SeekLunchMenus);
+                var thread = new Thread(task, maxStackSize);
+                thread.Start();
+                if (!thread.Join(TimeSpan.FromMinutes(timeoutMinutes)))
+                {
+                    Thread.Sleep(2000);
+                    thread.Abort();
+                    Logger.Fatal("Seek process timed out after {0} minutes.", timeoutMinutes);
+                }
+            }
+            catch (OutOfMemoryException exOutOfMemory)
+            {
+                Logger.Fatal("Seek process out of memory.", exOutOfMemory);
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal("Seek process error: " + ex.Message, ex);
+            }
         }
 
 
