@@ -21,7 +21,7 @@ namespace LunchCrawler.Analyzer.Test
         private static readonly IList<string> SkipPatterns = File.ReadAllLines("SkipPatterns.txt").ToList();
         private static readonly IList<FoodKeyword> FoodKeywords = LunchDA.Instance.GetAllFoodKeywords();
 
-        
+
         public static LunchMenuFeature DetectFeature(HtmlNode node)
         {
             var feature = new LunchMenuFeature

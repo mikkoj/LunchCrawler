@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
+using System.Collections.Generic;
 
 using LunchCrawler.Common;
-using LunchCrawler.Common.Interfaces;
 using LunchCrawler.Common.Logging;
+using LunchCrawler.Common.Interfaces;
 using LunchCrawler.MenuSeeker.Test.Properties;
 
 using Newtonsoft.Json.Linq;
@@ -17,9 +16,9 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
     /// Search engine for lunch menus based on Yahoo's BOSS API.
     /// </summary>
     /// <see cref="http://developer.yahoo.com/search/boss/boss_guide/index.html"/>
-    [Export(typeof(ISearchEngine))]
     public class YahooSearchEngine : ISearchEngine
     {
+        public string Name { get { return "Yahoo"; } }
         public ILogger Logger { get; set; }
 
         public YahooSearchEngine()

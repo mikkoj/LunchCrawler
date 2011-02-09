@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
+using System.Collections.Generic;
 
 using Google.API.Search;
 
@@ -15,9 +14,9 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
     /// <summary>
     /// Search engine for lunch menus based on Google's APIs.
     /// </summary>
-    [Export(typeof(ISearchEngine))]
     public class GoogleSearchEngine : ISearchEngine
     {
+        public string Name { get { return "Google"; } }
         public ILogger Logger { get; set; }
 
         public GoogleSearchEngine()

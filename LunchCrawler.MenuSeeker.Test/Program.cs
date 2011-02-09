@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
-using System.ComponentModel.Composition.Hosting;
 
 using Autofac;
-using Autofac.Integration.Mef;
 
 using LunchCrawler.Common.IoC;
 using LunchCrawler.Common.Logging;
@@ -19,14 +18,20 @@ namespace LunchCrawler.MenuSeeker.Test
             var container = BuildComponentContainer();
             var lunchMenuSeeker = container.Resolve<ILunchMenuSeeker>();
 
+            Console.WriteLine("-> Started seeking lunch menus..");
+            var watch = new Stopwatch();
+            watch.Start();
+
             lunchMenuSeeker.SeekLunchMenus();
 
+            watch.Stop();
+            
+            Console.WriteLine("\n\nLunch menu seeking done in {0}", watch.Elapsed);
             Console.ReadLine();
         }
 
-
         /// <summary>
-        /// Uses dependency injection and MEF to build an Autofac container for the assembly.
+        /// Uses dependency injection to build an Autofac container for the assembly.
         /// </summary>
         private static IContainer BuildComponentContainer()
         {
@@ -37,14 +42,8 @@ namespace LunchCrawler.MenuSeeker.Test
             builder.RegisterModule(new LoggingInjectModule(new NLogFactory()));
 
             // let's create the catalog based on the types in the assembly
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var catalog = new AssemblyCatalog(executingAssembly);
-
-            // let's register the MEF catalog
-            builder.RegisterComposablePartCatalog(catalog);
-
-            builder.RegisterType<LunchMenuSeeker>().As<ILunchMenuSeeker>().SingleInstance();
-            //builder.RegisterAssemblyTypes(executingAssembly).AsImplementedInterfaces();
+            var assembly = Assembly.GetExecutingAssembly();
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
 
             // finally, let's build and return the container
             return builder.Build();

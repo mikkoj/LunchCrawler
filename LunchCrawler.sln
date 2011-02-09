@@ -6,7 +6,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{8738E46A-1196-4D01-8809-7748AF2D77D3}"
 	ProjectSection(SolutionItems) = preProject
 		packages\GoogleSearchAPI.dll = packages\GoogleSearchAPI.dll
-		packages\GoogleSearchAPI.XML = packages\GoogleSearchAPI.XML
 		packages\HtmlAgilityPack.pdb = packages\HtmlAgilityPack.pdb
 		packages\HtmlAgilityPack.XML = packages\HtmlAgilityPack.XML
 		packages\repositories.config = packages\repositories.config

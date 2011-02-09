@@ -8,6 +8,7 @@ namespace LunchCrawler.Common.Interfaces
     /// </summary>
     public interface ISearchEngine
     {
+        string Name { get; }
         IList<string> SearchForLinks(string query);
     }
 }

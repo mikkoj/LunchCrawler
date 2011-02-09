@@ -9,7 +9,7 @@
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.Store.FoodKeywords" store:Type="Tables" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.Store.LunchMenuFeatures" store:Type="Tables" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.Store.LunchMenuKeywords" store:Type="Tables" />
-          <EntitySet Name="PotentialLunchMenus" EntityType="LunchModel.Store.PotentialLunchMenus" store:Type="Tables" />
+          <EntitySet Name="LunchMenus" EntityType="LunchModel.Store.LunchMenus" store:Type="Tables" />
           <EntitySet Name="SearchKeywords" EntityType="LunchModel.Store.SearchKeywords" store:Type="Tables" />
         </EntityContainer>
         <EntityType Name="FoodKeywords">
@@ -38,17 +38,19 @@
           <Property Name="Weight" Type="int" Nullable="false" />
           <Property Name="DetectionCount" Type="integer" Nullable="false" />
         </EntityType>
-        <EntityType Name="PotentialLunchMenus">
+        <EntityType Name="LunchMenus">
           <Key>
             <PropertyRef Name="URL" />
           </Key>
           <Property Name="URL" Type="nvarchar" Nullable="false" MaxLength="350" />
+          <Property Name="AbsoluteURL" Type="nvarchar" Nullable="false" MaxLength="350" />
           <Property Name="Name" Type="nvarchar" MaxLength="150" />
           <Property Name="Address" Type="nvarchar" MaxLength="200" />
           <Property Name="PhoneNumber" Type="nvarchar" MaxLength="150" />
           <Property Name="OpeningHours" Type="nvarchar" MaxLength="150" />
           <Property Name="SiteHash" Type="nvarchar" />
           <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="ErrorCount" Type="int" />
           <Property Name="TotalPoints" Type="int" Nullable="false" />
           <Property Name="LunchMenuProbability" Type="decimal" Nullable="false" Precision="53" />
           <Property Name="TotalKeywordDetections" Type="int" />
@@ -74,8 +76,8 @@
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.FoodKeyword" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.LunchMenuFeature" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.LunchMenuKeyword" />
-          <EntitySet Name="PotentialLunchMenus" EntityType="LunchModel.PotentialLunchMenu" />
           <EntitySet Name="SearchKeywords" EntityType="LunchModel.SearchKeyword" />
+          <EntitySet Name="LunchMenus" EntityType="LunchModel.LunchMenu" />
         </EntityContainer>
         <EntityType Name="FoodKeyword">
           <Key>
@@ -103,7 +105,15 @@
           <Property Type="Int32" Name="Weight" Nullable="false" />
           <Property Type="Int64" Name="DetectionCount" Nullable="false" />
         </EntityType>
-        <EntityType Name="PotentialLunchMenu">
+        <EntityType Name="SearchKeyword">
+          <Key>
+            <PropertyRef Name="QueryKeyword" />
+          </Key>
+          <Property Type="Decimal" Name="SuccessRate" Precision="53" Scale="0" />
+          <Property Type="String" Name="QueryKeyword" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Category" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LunchMenu">
           <Key>
             <PropertyRef Name="URL" />
           </Key>
@@ -122,14 +132,8 @@
           <Property Type="Int32" Name="FuzzyKeywordDetections" />
           <Property Type="DateTime" Name="DateAdded" Nullable="false" />
           <Property Type="DateTime" Name="DateUpdated" />
-        </EntityType>
-        <EntityType Name="SearchKeyword">
-          <Key>
-            <PropertyRef Name="QueryKeyword" />
-          </Key>
-          <Property Type="Decimal" Name="SuccessRate" Precision="53" Scale="0" />
-          <Property Type="String" Name="QueryKeyword" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="Category" Nullable="false" />
+          <Property Type="String" Name="AbsoluteURL" Nullable="false" MaxLength="350" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="ErrorCount" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -158,9 +162,20 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PotentialLunchMenus">
-            <EntityTypeMapping TypeName="LunchModel.PotentialLunchMenu">
-              <MappingFragment StoreEntitySet="PotentialLunchMenus">
+          <EntitySetMapping Name="SearchKeywords">
+            <EntityTypeMapping TypeName="LunchModel.SearchKeyword">
+              <MappingFragment StoreEntitySet="SearchKeywords">
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="QueryKeyword" ColumnName="QueryKeyword" />
+                <ScalarProperty Name="SuccessRate" ColumnName="SuccessRate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LunchMenus">
+            <EntityTypeMapping TypeName="LunchModel.LunchMenu">
+              <MappingFragment StoreEntitySet="LunchMenus">
+                <ScalarProperty Name="ErrorCount" ColumnName="ErrorCount" />
+                <ScalarProperty Name="AbsoluteURL" ColumnName="AbsoluteURL" />
                 <ScalarProperty Name="DateUpdated" ColumnName="DateUpdated" />
                 <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
                 <ScalarProperty Name="FuzzyKeywordDetections" ColumnName="FuzzyKeywordDetections" />
@@ -176,15 +191,6 @@
                 <ScalarProperty Name="Address" ColumnName="Address" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="URL" ColumnName="URL" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SearchKeywords">
-            <EntityTypeMapping TypeName="LunchModel.SearchKeyword">
-              <MappingFragment StoreEntitySet="SearchKeywords">
-                <ScalarProperty Name="Category" ColumnName="Category" />
-                <ScalarProperty Name="QueryKeyword" ColumnName="QueryKeyword" />
-                <ScalarProperty Name="SuccessRate" ColumnName="SuccessRate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -212,8 +218,8 @@
         <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="5.375" PointY="0.75" Height="1.099264322916667" IsExpanded="true" />
         <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="3.25" PointY="0.75" Height="2.0853483072916674" IsExpanded="true" />
         <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="2.25" PointX="0.625" PointY="0.75" Height="1.4279589843749996" />
-        <EntityTypeShape EntityType="LunchModel.PotentialLunchMenu" Width="2" PointX="7.125" PointY="0.75" Height="3.4001269531249996" />
         <EntityTypeShape EntityType="LunchModel.SearchKeyword" Width="1.5" PointX="0.75" PointY="2.875" Height="1.5956835937499996" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenu" Width="1.875" PointX="7.125" PointY="0.75" Height="3.4001269531249996" />
       </Diagram>
     </Diagrams>
   </Designer>

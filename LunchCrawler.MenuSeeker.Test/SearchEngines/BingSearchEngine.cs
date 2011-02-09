@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
+using System.Collections.Generic;
 
 using Bing;
 
-using LunchCrawler.Common.Interfaces;
 using LunchCrawler.Common.Logging;
+using LunchCrawler.Common.Interfaces;
 using LunchCrawler.MenuSeeker.Test.Properties;
 
 
@@ -15,9 +14,9 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
     /// <summary>
     /// Search engine for lunch menus based on Bing's APIs.
     /// </summary>
-    [Export(typeof(ISearchEngine))]
     public class BingSearchEngine : ISearchEngine
     {
+        public string Name { get { return "Bing"; } }
         public ILogger Logger { get; set; }
 
         public BingSearchEngine()

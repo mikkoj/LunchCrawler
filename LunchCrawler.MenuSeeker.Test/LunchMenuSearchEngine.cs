@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 using LunchCrawler.Common;
 using LunchCrawler.Common.Interfaces;
+using LunchCrawler.Common.Logging;
 
 
 namespace LunchCrawler.MenuSeeker.Test
@@ -12,15 +12,25 @@ namespace LunchCrawler.MenuSeeker.Test
     /// Acts as the 'main' search engine for the entire application.
     /// Aggregates results from all the ISearchEngines defined within the assembly.
     /// </summary>
-    [Export(typeof(ILunchMenuSearchEngine))]
     public class LunchMenuSearchEngine : ILunchMenuSearchEngine
     {
+        public ILogger Logger { get; set; }
+
+        public LunchMenuSearchEngine()
+        {
+            Logger = NullLogger.Instance;
+        }
+
         /// <summary>
         /// Collection of found search engines in this solution. MEF will compose the collection.
         /// </summary>
-        [ImportMany(typeof(ISearchEngine))]
         public IEnumerable<ISearchEngine> SearchEngines { get; set; }
 
+
+        public LunchMenuSearchEngine(IEnumerable<ISearchEngine> engines)
+        {
+            SearchEngines = engines;
+        }
 
         /// <summary>
         /// Searches for lunch menu URLs through all search engines with a given query string.
@@ -28,9 +38,14 @@ namespace LunchCrawler.MenuSeeker.Test
         /// <param name="query">Query string to search with.</param>
         public List<string> SearchForLunchMenuURLs(string query)
         {
-            return SearchEngines.SelectMany(engine => engine.SearchForLinks(query) ?? new List<string>())
-                                .Distinct(new UrlComparer())
-                                .ToList();
+            return SearchEngines.SelectMany(engine =>
+            {
+                var linksFromEngine = engine.SearchForLinks(query) ?? new List<string>();
+                Logger.Info("{0} - found {1} links for '{2}'", engine.Name, linksFromEngine.Count, query);
+                return linksFromEngine;
+            })
+            .Distinct(new UrlComparer())
+            .ToList();
         }
 
 

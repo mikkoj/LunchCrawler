@@ -7,6 +7,9 @@
         OK = 1,
         CannotConnect = 2,
         Invalid = 3,
-        ShouldSkip = 4
+        ShouldSkip = 4,
+        AnalysisFailed = 5,
+        ReAnalysisFailed = 6,
+        ManuallyAdded = 7
     }
 }

@@ -70,6 +70,12 @@
   <ItemGroup>
     <None Include="App.Config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LunchCrawler.Common\LunchCrawler.Common.csproj">
+      <Project>{6348B9F6-5DF8-4FBE-9A1A-6283459B00D7}</Project>
+      <Name>LunchCrawler.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
