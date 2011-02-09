@@ -60,18 +60,27 @@ namespace LunchCrawler.Common
 
                     var buf = new byte[buffsize];
                     var ms = new MemoryStream();
-                    int count;
+                    var count = response.GetResponseStream().Read(buf, 0, buffsize);
+                    var mime = MimeDetector.DetermineMIMEType(GetBaseUrl(url), buf);
 
-                    while ((count = response.GetResponseStream().Read(buf, 0, buffsize)) != 0)
-                        ms.Write(buf, 0, count);
+                    if (mime == "text/html")
+                    {
+                        do
+                            ms.Write(buf, 0, count);
+                        while ((count = response.GetResponseStream().Read(buf, 0, buffsize)) != 0);
 
-                    var bytes = ms.GetBuffer();
-                   
-                    var docEncoding = htmlDoc.DetectEncodingHtml(headerEncoding.GetString(bytes));
-                    var convertedBytes = Encoding.Convert(docEncoding ?? headerEncoding, Encoding.Unicode, bytes);
-                    var convertedData = Encoding.Unicode.GetString(convertedBytes);
+                        var bytes = ms.GetBuffer();
 
-                    htmlDoc.LoadHtml(convertedData);
+                        var docEncoding = htmlDoc.DetectEncodingHtml(headerEncoding.GetString(bytes));
+                        var convertedBytes = Encoding.Convert(docEncoding ?? headerEncoding, Encoding.Unicode, bytes);
+                        var convertedData = Encoding.Unicode.GetString(convertedBytes);
+
+                        htmlDoc.LoadHtml(convertedData);
+                    }
+                    else
+                    {
+                        _logger.Info("Discarded invalid mimetype: " + mime);
+                    }
                 }
             }
             catch (Exception ex)

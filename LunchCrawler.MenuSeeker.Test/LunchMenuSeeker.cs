@@ -132,7 +132,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
                 if (existingMenu == null || existingMenu.Status == (int) LunchMenuStatus.CannotConnect)
                 {
-                    var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url);
+                    var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url, Settings.Default.HTTPTimeoutSeconds);
                     if (lunchMenuDocument == null)
                     {
                         // no special error handling for now, any HTTP error -> can't connect

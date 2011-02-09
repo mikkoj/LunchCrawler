@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MimeDetector.cs" />
     <Compile Include="Enums\LunchMenuStatus.cs" />
     <Compile Include="Enums\StringMatchType.cs" />
     <Compile Include="Enums\LunchMenuFeatureType.cs" />
