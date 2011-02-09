@@ -1514,6 +1514,11 @@ namespace HtmlAgilityPack
         public void WriteTo(TextWriter outText)
         {
             string html;
+
+            /* Hack to ensure we do not run out of stack space! */
+            if (!StackChecker.HasSufficientStack(100))
+                throw new InvalidDataException("Out of Stack space");
+
             switch (_nodetype)
             {
                 case HtmlNodeType.Comment:
