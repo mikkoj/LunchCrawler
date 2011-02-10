@@ -228,22 +228,22 @@ namespace LunchCrawler.MenuSeeker.Test
 
             var scoreBuilder = new StringBuilder();
 
-            scoreBuilder.AppendFormat("\n Scores for URL: {0}\n", url);
+            scoreBuilder.AppendFormat("scores for URL: {0}\n", url);
             scoreBuilder.AppendFormat("- status: {0} - total points: {1} - lunch menu probability: {2:P}\n",
                                       status,
                                       scores.Points.Sum(p => p.PointsGiven),
                                       scores.LunchMenuProbability);
 
-            foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))
-            {
-                var consoledata = Utils.CleanContentForConsole(scorePoint.DetectedText);
-                scoreBuilder.AppendFormat("{0,2:00}: {1}\t -> {2}\n",
-                                          scorePoint.PointsGiven,
-                                          scorePoint.DetectedKeyword,
-                                          consoledata);
-            }
+            //foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))
+            //{
+            //    var consoledata = Utils.CleanContentForConsole(scorePoint.DetectedText);
+            //    scoreBuilder.AppendFormat("{0,2:00}: {1}\t -> {2}\n",
+            //                              scorePoint.PointsGiven,
+            //                              scorePoint.DetectedKeyword,
+            //                              consoledata);
+            //}
 
-            scoreBuilder.AppendLine("\r\n\r\n--------------------------------------------------------------\n");
+            scoreBuilder.AppendLine("\r\n-----------------------------------------------------------------------------");
             var lunchMenuScores = scoreBuilder.ToString();
             Logger.Info(lunchMenuScores);
         }

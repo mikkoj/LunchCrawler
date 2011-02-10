@@ -7,6 +7,8 @@ namespace LunchCrawler.MenuSeeker.Test.Model
 {
     public class LunchMenuScores
     {
+        private decimal? _lunchmenuProbability;
+
         public LunchMenuScores()
         {
             Points = new List<LunchMenuScorePoint>();
@@ -21,10 +23,23 @@ namespace LunchCrawler.MenuSeeker.Test.Model
         {
             get
             {
-                var totalPoints = Points.Sum(point => point.PointsGiven);
-                
-                // TODO: logic for probability
-                return totalPoints / 100.0M;
+                if (!_lunchmenuProbability.HasValue)
+                {
+                    var totalPoints = Points.Sum(point => point.PointsGiven);
+
+                    // bonus points for all week days
+                    var weekDays = new[] { "maanantai", "tiistai", "keskiviikko", "torstai", "perjantai" };
+                    if (weekDays.All(day => Points.Any(point => point.DetectedKeyword.ToLowerInvariant().Equals(day))))
+                    {
+                        Points.Add(new LunchMenuScorePoint { PointsGiven = 20 });
+                    }
+
+                    // TODO: more logic for probability
+
+                    _lunchmenuProbability = totalPoints / 100.0M;
+                }
+
+                return _lunchmenuProbability.Value;
             }
         }
     }
