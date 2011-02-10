@@ -58,7 +58,7 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
             {
                 var resultJson = JObject.Parse(result);
                 var resultSet = resultJson["ysearchresponse"]["resultset_web"];
-                return resultSet.Select(r => (string) r["url"]).ToList();
+                return resultSet.Select(r => (string)r["url"]).ToList();
             }
             catch (Exception)
             {

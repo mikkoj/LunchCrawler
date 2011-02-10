@@ -47,32 +47,33 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public void UpdateLunchMenuKeywordDetectionCount(string word, long detectionCount)
+        public void UpdateLunchMenuKeywordDetectionCounts(IDictionary<string, int> keywordCounts)
         {
-            try
+            using (var entityContext = new LunchEntities())
             {
-                using (var entityContext = new LunchEntities())
+                foreach (var keywordPair in keywordCounts)
                 {
+                    var keywordName = keywordPair.Key;
+                    var keywordCount = keywordPair.Value;
+
                     var existingKeyword = entityContext.LunchMenuKeywords
-                                                       .FirstOrDefault(keyword => keyword.Word.Equals(word, StringComparison.InvariantCultureIgnoreCase));
-                    if (existingKeyword != null)
+                                                       .FirstOrDefault(keyword => keyword.Word.Equals(keywordName,
+                                                                                                      StringComparison.InvariantCultureIgnoreCase));
+                    if (existingKeyword == null)
                     {
-                        existingKeyword.DetectionCount = detectionCount;
-                        entityContext.SaveChanges();
+                        continue;
                     }
-                }
-            }
-            catch (UpdateException updateException)
-            {
-                var baseError = updateException.GetBaseException();
-                if (baseError.Message.Contains("not unique"))
-                {
-                    return;
+
+                    var existingDetectionCount = existingKeyword.DetectionCount;
+                    var newDetectionCount = existingDetectionCount + keywordCount;
+
+                    existingKeyword.DetectionCount = newDetectionCount;
                 }
 
-                throw;
+                entityContext.SaveChanges();
             }
         }
+
 
         public IList<FoodKeyword> GetAllFoodKeywords()
         {
@@ -82,7 +83,7 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public IList<LunchMenuKeyword> GetAllBasicLunchMenuKeywords()
+        public IEnumerable<LunchMenuKeyword> GetAllBasicLunchMenuKeywords()
         {
             using (var entityContext = new LunchEntities())
             {
@@ -106,7 +107,7 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        
+
         /// <summary>
         /// Searches the DB for an existing lunch menu.
         /// </summary>

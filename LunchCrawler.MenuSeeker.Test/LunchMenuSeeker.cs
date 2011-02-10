@@ -35,7 +35,7 @@ namespace LunchCrawler.MenuSeeker.Test
             _searchEngine = searchEngine;
         }
 
-        private static readonly IList<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
+        private static readonly IEnumerable<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
         private static readonly IList<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
 
         /// <summary>
@@ -112,11 +112,21 @@ namespace LunchCrawler.MenuSeeker.Test
                                       .Distinct(new UrlComparer());
 
             Logger.InfoFormat("Started scoring total of {0} links..", allUrls.Count());
-            Parallel.ForEach(allUrls, url => ScoreLunchMenu(url));
+            Parallel.ForEach(allUrls, ScoreLunchMenu);
+
+            // let's also print the detection counts
+            var lunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
+            foreach (var keyword in lunchMenuKeywords.OrderByDescending(keyword => keyword.DetectionCount))
+            {
+                Logger.InfoFormat("- keyword: {0}\tdetection count: {1}", keyword.Word, keyword.DetectionCount);
+            }
         }
 
 
-        public void ScoreLunchMenu(string url, int retryCount = 0)
+        /// <summary>
+        /// Scores a single URL as a lunch menu.
+        /// </summary>
+        public void ScoreLunchMenu(string url)
         {
             var potentialMenu = new LunchMenu
             {
@@ -130,7 +140,7 @@ namespace LunchCrawler.MenuSeeker.Test
                 // Check if we already have this one
                 var existingMenu = LunchDA.Instance.FindExistingLunchMenu(potentialMenu.URL);
 
-                if (existingMenu == null || existingMenu.Status == (int) LunchMenuStatus.CannotConnect)
+                if (existingMenu == null || existingMenu.Status == (int)LunchMenuStatus.CannotConnect)
                 {
                     var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url, Settings.Default.HTTPTimeoutSeconds);
                     if (lunchMenuDocument == null)
@@ -142,10 +152,11 @@ namespace LunchCrawler.MenuSeeker.Test
                         return;
                     }
 
+                    // let's calculate and log scores
                     var scores = GetScoresForHtmlDocument(lunchMenuDocument);
                     LogLunchMenuScores(url, (LunchMenuStatus)potentialMenu.Status, scores);
 
-                    // ..and let's finish the potential menu object and update the DB
+                    // ..and let's finish the potential menu instance and update the DB
                     CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
                     LunchDA.Instance.UpdateLunchMenu(potentialMenu);
                 }
@@ -155,23 +166,19 @@ namespace LunchCrawler.MenuSeeker.Test
                 var errorMessage = entityEx.ParseInnerError();
                 if (errorMessage.ToLowerInvariant().Contains("database is locked"))
                 {
-                    if (retryCount > 0)
-                    {
-                        return;
-                    }
-
-                    // retry
-                    Thread.Sleep(1000);
-                    ScoreLunchMenu(url, 1);
+                    Logger.Fatal("SQLite database is locked.");
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                Logger.Fatal("Error scoring document for URL: " + url, ex);
+                Logger.Fatal("Error scoring document for URL: {0} - {1}".With(url, ex.Message), ex);
             }
         }
 
-
+        /// <summary>
+        /// Calculates lunch menu scores for a Html-document.
+        /// </summary>
         private static LunchMenuScores GetScoresForHtmlDocument(LunchMenuDocument lunchMenuDocument)
         {
             // let's create a new detection based on the basic lunch menu keywords
@@ -185,6 +192,10 @@ namespace LunchCrawler.MenuSeeker.Test
                                                .Select(lunchMenuDetection.ScoreNode)
                                                .Where(scored => scored.DetectionLocation != LunchMenuDetectionLocation.Unknown)
                                                .ToList();
+
+            // let's update the detection count for found lunch menu keywords
+            lunchMenuDetection.UpdateLunchMenuKeywordCountsDB();
+
             // let's wrap and print scores
             return new LunchMenuScores
             {

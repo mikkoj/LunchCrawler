@@ -42,6 +42,13 @@ namespace LunchCrawler.Common
             return GetLunchMenuDocumentForUrl(url, 10);
         }
 
+        /// <summary>
+        /// Attempts to fetch and load a HtmlDocument for a given URL.
+        /// Also determines the MIME-type for the stream and computes a hash if needed.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url, int timeout)
         {
             var document = new LunchMenuDocument();
@@ -49,25 +56,31 @@ namespace LunchCrawler.Common
 
             const int buffsize = 1024;
 
-            // TODO: timeout & joillain response codeilla 1x retry (?)
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(GetUri(url));
                 request.Timeout = timeout * 1000;
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    var headerEncoding = TryGetEncoding(response.ContentEncoding) ?? TryGetEncoding(response.CharacterSet) ?? Encoding.UTF8;
+                    var headerEncoding = TryGetEncoding(response.ContentEncoding) ??
+                                         TryGetEncoding(response.CharacterSet) ??
+                                         Encoding.UTF8;
 
                     var buf = new byte[buffsize];
                     var ms = new MemoryStream();
-                    var count = response.GetResponseStream().Read(buf, 0, buffsize);
-                    var mime = MimeDetector.DetermineMIMEType(GetBaseUrl(url), buf);
+                    var responseStream = response.GetResponseStream();
+                    if (responseStream == null)
+                    {
+                        return null;
+                    }
+                    var count = responseStream.Read(buf, 0, buffsize);
 
-                    if (mime == "text/html")
+                    document.MimeType = MimeDetector.DetermineMIMEType(buf);
+                    if (document.MimeType == "text/html")
                     {
                         do
                             ms.Write(buf, 0, count);
-                        while ((count = response.GetResponseStream().Read(buf, 0, buffsize)) != 0);
+                        while ((count = responseStream.Read(buf, 0, buffsize)) != 0);
 
                         var bytes = ms.GetBuffer();
 
@@ -79,11 +92,11 @@ namespace LunchCrawler.Common
                     }
                     else
                     {
-                        _logger.Info("Discarded invalid mimetype: " + mime);
+                        _logger.Info("Discarded invalid mimetype '{0}' for URL: {1}", document.MimeType, url);
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }

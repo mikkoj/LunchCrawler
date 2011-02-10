@@ -14,11 +14,13 @@ namespace LunchCrawler.MenuSeeker.Test
 {
     public class LunchMenuDetection
     {
+        private Dictionary<string, int> _lunchMenuKeywordCounts;
         private readonly List<LunchMenuKeyword> _keywords;
 
         public LunchMenuDetection(List<LunchMenuKeyword> keywords)
         {
             _keywords = keywords;
+            _lunchMenuKeywordCounts = new Dictionary<string, int>();
         }
 
         /// <summary>
@@ -84,19 +86,21 @@ namespace LunchCrawler.MenuSeeker.Test
         }
 
 
-        private static void UpdateLunchMenuKeyword(LunchMenuKeyword keyword)
+        private void UpdateLunchMenuKeyword(LunchMenuKeyword keyword)
         {
-            var existingKeyword = LunchDA.Instance.GetLunchMenuKeyword(keyword.Word);
-            if (existingKeyword == null)
+            if (_lunchMenuKeywordCounts.ContainsKey(keyword.Word))
             {
-                return;
+                _lunchMenuKeywordCounts[keyword.Word]++;
             }
+            else
+            {
+                _lunchMenuKeywordCounts.Add(keyword.Word, 1);
+            }
+        }
 
-            var existingWeight = existingKeyword.Weight;
-            var existingDetectionCount = existingKeyword.DetectionCount;
-
-            var newDetectionCount = existingDetectionCount + 1;
-            LunchDA.Instance.UpdateLunchMenuKeywordDetectionCount(keyword.Word, newDetectionCount);
+        public void UpdateLunchMenuKeywordCountsDB()
+        {
+            LunchDA.Instance.UpdateLunchMenuKeywordDetectionCounts(_lunchMenuKeywordCounts);
         }
     }
 }

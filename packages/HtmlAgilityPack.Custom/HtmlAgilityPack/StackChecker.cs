@@ -23,7 +23,7 @@ namespace HtmlAgilityPack
             // address space) is greater than the number of bytes requested plus the reserved
             // space at the end, the request has succeeded.
             return ((uint)currentAddr.ToInt64() - stackInfo.AllocationBase) >
-                (bytes + STACK_RESERVED_SPACE);
+                   (bytes + STACK_RESERVED_SPACE);
         }
 
         // We are conservative here. We assume that the platform needs a whole 16 pages to
@@ -32,11 +32,11 @@ namespace HtmlAgilityPack
         // incorrectly.
         private const long STACK_RESERVED_SPACE = 4096 * 16;
 
+
         [DllImport("kernel32.dll")]
-        private static extern int VirtualQuery(
-            IntPtr lpAddress,
-            ref MEMORY_BASIC_INFORMATION lpBuffer,
-            int dwLength);
+        private static extern int VirtualQuery(IntPtr lpAddress,
+                                               ref MEMORY_BASIC_INFORMATION lpBuffer,
+                                               int dwLength);
 
         private struct MEMORY_BASIC_INFORMATION
         {
