@@ -53,6 +53,7 @@ namespace LunchCrawler.Common
         {
             var document = new LunchMenuDocument();
             var htmlDoc = new HtmlDocument();
+            var allowedmimetypes = new [] { "text/html", "text/xml" };
 
             const int buffsize = 1024;
 
@@ -75,7 +76,7 @@ namespace LunchCrawler.Common
                     }
                     var count = responseStream.Read(buf, 0, buffsize);
 
-                    document.MimeType = MimeDetector.DetermineMIMEType(buf);
+                    if (Array.Exists(allowedmimetypes, mimetype => mimetype.Equals(mime)))
                     if (document.MimeType == "text/html")
                     {
                         do
