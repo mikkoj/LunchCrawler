@@ -42,18 +42,18 @@ namespace LunchCrawler.Common
             return GetLunchMenuDocumentForUrl(url, 10);
         }
 
+
         /// <summary>
         /// Attempts to fetch and load a HtmlDocument for a given URL.
         /// Also determines the MIME-type for the stream and computes a hash if needed.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="url">URL to be loaded.</param>
+        /// <param name="timeout">Timeout for HttpWebRequest in seconds.</param>
         public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url, int timeout)
         {
             var document = new LunchMenuDocument();
             var htmlDoc = new HtmlDocument();
-            var allowedmimetypes = new [] { "text/html", "text/xml" };
+            var allowedmimetypes = new[] { "text/html", "text/xml" };
 
             const int buffsize = 1024;
 
@@ -75,9 +75,10 @@ namespace LunchCrawler.Common
                         return null;
                     }
                     var count = responseStream.Read(buf, 0, buffsize);
+                    
+                    document.MimeType = MimeDetector.DetermineMIMEType(buf);
 
-                    if (Array.Exists(allowedmimetypes, mimetype => mimetype.Equals(mime)))
-                    if (document.MimeType == "text/html")
+                    if (Array.Exists(allowedmimetypes, mimetype => mimetype.Equals(document.MimeType)))
                     {
                         do
                             ms.Write(buf, 0, count);
