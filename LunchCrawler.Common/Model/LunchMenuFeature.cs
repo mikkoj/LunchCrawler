@@ -1,8 +1,9 @@
 ﻿using LunchCrawler.Common.Enums;
+
 using HtmlAgilityPack;
 
 
-namespace LunchCrawler.Analyzer.Test
+namespace LunchCrawler.Common.Model
 {
     public class LunchMenuFeature
     {

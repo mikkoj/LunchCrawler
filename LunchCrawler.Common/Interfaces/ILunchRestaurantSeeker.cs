@@ -1,6 +1,6 @@
 namespace LunchCrawler.Common.Interfaces
 {
-    public interface ILunchMenuSeeker
+    public interface ILunchRestaurantSeeker
     {
         /// <summary>
         /// Starts the seeking process in a separate thread.
@@ -8,8 +8,8 @@ namespace LunchCrawler.Common.Interfaces
         void Start();
 
         /// <summary>
-        /// Seeks lunch menus from various sources.
+        /// Seeks lunch restaurants from various sources.
         /// </summary>
-        void SeekLunchMenus();
+        void SeekLunchRestaurants();
     }
 }

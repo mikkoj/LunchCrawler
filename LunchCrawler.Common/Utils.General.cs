@@ -80,6 +80,11 @@ namespace LunchCrawler.Common
             }
         }
 
+        public static bool IsEmpty<T>(this IEnumerable<T> source)
+        {
+            return !source.Any();
+        }
+
         public static string ParseInnerError(this Exception ex)
         {
             if (ex == null || string.IsNullOrEmpty(ex.Message))

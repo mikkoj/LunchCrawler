@@ -18,13 +18,13 @@ namespace LunchCrawler.MenuSeeker.Test
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
             var container = BuildComponentContainer();
-            var lunchMenuSeeker = container.Resolve<ILunchMenuSeeker>();
+            var lunchRestaurantSeeker = container.Resolve<ILunchRestaurantSeeker>();
 
             Console.WriteLine("-> Started seeking lunch menus..");
             var watch = new Stopwatch();
             watch.Start();
 
-            lunchMenuSeeker.Start();
+            lunchRestaurantSeeker.Start();
 
             watch.Stop();
             

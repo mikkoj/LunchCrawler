@@ -69,12 +69,10 @@
     <Compile Include="SearchEngines\BingSearchEngine.cs" />
     <Compile Include="SearchEngines\GoogleSearchEngine.cs" />
     <Compile Include="LunchMenuDetection.cs" />
-    <Compile Include="Model\LunchMenuScorePoint.cs" />
-    <Compile Include="Model\LunchMenuScores.cs" />
-    <Compile Include="LunchMenuSeeker.cs" />
+    <Compile Include="LunchRestaurantSeeker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LunchMenuSearchEngine.cs" />
+    <Compile Include="LunchRestaurantSearchEngine.cs" />
     <Compile Include="SearchEngines\YahooSearchEngine.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,13 +7,13 @@ namespace LunchCrawler.Analyzer.Test
     {
         static void Main()
         {
-            var parser = new LunchMenuParser();
+            var parser = new LunchRestaurantAnalyzer();
 
-            parser.ParseLunchMenu(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
+            parser.AnalyzeLunchRestaurant(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
             Separator();
-            parser.ParseLunchMenu(@"http://www.veritasstadion.com/cgi/menu.htm");
+            parser.AnalyzeLunchRestaurant(@"http://www.veritasstadion.com/cgi/menu.htm");
             Separator();
-            parser.ParseLunchMenu(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
+            parser.AnalyzeLunchRestaurant(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
 
             Console.ReadLine();
         }

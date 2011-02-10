@@ -42,7 +42,7 @@ namespace LunchCrawler.MenuSeeker.Test.SearchEngines
         private static IList<string> SearchWithGoogleRaw(string query)
         {
             var queryUrl = string.Format("http://www.google.com/search?as_q={0}&num=100&hl=fi", query);
-            var searchResult = Utils.GetLunchMenuDocumentForUrl(queryUrl);
+            var searchResult = Utils.GetLunchRestaurantDocumentForUrl(queryUrl);
 
             if (searchResult != null)
             {

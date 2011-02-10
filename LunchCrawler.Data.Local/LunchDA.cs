@@ -3,6 +3,7 @@ using System.Linq;
 using System.Data;
 using System.Collections.Generic;
 
+using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
 
 
@@ -99,51 +100,63 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public IList<LunchMenu> GetLunchMenusWithStatus(LunchMenuStatus status)
+        public IList<LunchRestaurant> GetLunchRestaurantsWithStatus(LunchMenuStatus status)
         {
             using (var entityContext = new LunchEntities())
             {
-                return entityContext.LunchMenus.Where(menu => menu.Status == (int)status).ToList();
+                return entityContext.LunchRestaurants.Where(rt => rt.Status == (int)status).ToList();
             }
         }
 
+        public IList<LunchRestaurant> GetLunchRestaurantsWithStates(params LunchMenuStatus[] states)
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                return entityContext.LunchRestaurants
+                                    .Where(rt => states.Any(status => (int)status == rt.Status))
+                                    .ToList();
+            }
+        }
 
         /// <summary>
-        /// Searches the DB for an existing lunch menu.
+        /// Searches the DB for an existing lunch restaurant.
         /// </summary>
-        /// <param name="lunchMenuUrl">An existing lunch menu URL.</param>
-        public LunchMenu FindExistingLunchMenu(string lunchMenuUrl)
+        /// <param name="lunchRestaurantUrl">An existing lunch restaurant URL.</param>
+        public LunchRestaurant FindExistingLunchRestaurant(string lunchRestaurantUrl)
         {
             using (var entityContext = new LunchEntities())
             {
-                return entityContext.LunchMenus
-                                    .FirstOrDefault(menu => menu.URL.Equals(lunchMenuUrl, StringComparison.InvariantCultureIgnoreCase));
+                return entityContext.LunchRestaurants
+                                    .FirstOrDefault(rt => rt.URL.Equals(lunchRestaurantUrl, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
-        public void UpdateLunchMenu(LunchMenu lunchMenu)
+        /// <summary>
+        /// Adds a new lunch restaurant or updates an existing one.
+        /// </summary>
+        public void UpdateLunchRestaurant(LunchRestaurant lunchRestaurant)
         {
             try
             {
                 using (var entityContext = new LunchEntities())
                 {
-                    var existingUrl = FindExistingLunchMenu(lunchMenu.URL);
+                    var existingUrl = FindExistingLunchRestaurant(lunchRestaurant.URL);
                     if (existingUrl != null)
                     {
-                        existingUrl.Status = lunchMenu.Status;
-                        existingUrl.SiteHash = lunchMenu.SiteHash;
-                        existingUrl.LunchMenuProbability = lunchMenu.LunchMenuProbability;
-                        existingUrl.TotalPoints = lunchMenu.TotalPoints;
-                        existingUrl.TotalKeywordDetections = lunchMenu.TotalKeywordDetections;
-                        existingUrl.ExactKeywordDetections = lunchMenu.ExactKeywordDetections;
-                        existingUrl.PartialKeywordDetections = lunchMenu.PartialKeywordDetections;
-                        existingUrl.FuzzyKeywordDetections = lunchMenu.FuzzyKeywordDetections;
+                        existingUrl.Status = lunchRestaurant.Status;
+                        existingUrl.SiteHash = lunchRestaurant.SiteHash;
+                        existingUrl.LunchMenuProbability = lunchRestaurant.LunchMenuProbability;
+                        existingUrl.TotalPoints = lunchRestaurant.TotalPoints;
+                        existingUrl.TotalKeywordDetections = lunchRestaurant.TotalKeywordDetections;
+                        existingUrl.ExactKeywordDetections = lunchRestaurant.ExactKeywordDetections;
+                        existingUrl.PartialKeywordDetections = lunchRestaurant.PartialKeywordDetections;
+                        existingUrl.FuzzyKeywordDetections = lunchRestaurant.FuzzyKeywordDetections;
                         existingUrl.DateUpdated = DateTime.UtcNow;
                     }
                     else
                     {
-                        lunchMenu.DateAdded = DateTime.UtcNow;
-                        entityContext.LunchMenus.AddObject(lunchMenu);
+                        lunchRestaurant.DateAdded = DateTime.UtcNow;
+                        entityContext.LunchRestaurants.AddObject(lunchRestaurant);
                     }
 
                     entityContext.SaveChanges();

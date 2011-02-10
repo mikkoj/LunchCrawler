@@ -6,9 +6,9 @@ namespace LunchCrawler.Common.Interfaces
     /// <summary>
     /// Interface for the central search engine for the entire application.
     /// </summary>
-    public interface ILunchMenuSearchEngine
+    public interface ILunchRestaurantSearchEngine
     {
-        List<string> SearchForLunchMenuURLs(string query);
-        List<string> SearchForLunchMenuURLs(IList<string> queries);
+        IList<string> SearchForLunchMenuURLs(string query);
+        IList<string> SearchForLunchMenuURLs(IList<string> queries);
     }
 }

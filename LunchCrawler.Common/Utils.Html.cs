@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 
 using HtmlAgilityPack;
 
+using LunchCrawler.Common.Model;
+
 using NLog;
 
 
@@ -37,9 +39,9 @@ namespace LunchCrawler.Common
                 node.Attributes.Contains("href");
         }
 
-        public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url)
+        public static LunchRestaurantDocument GetLunchRestaurantDocumentForUrl(string url)
         {
-            return GetLunchMenuDocumentForUrl(url, 10);
+            return GetLunchRestaurantDocumentForUrl(url, 10);
         }
 
 
@@ -49,9 +51,9 @@ namespace LunchCrawler.Common
         /// </summary>
         /// <param name="url">URL to be loaded.</param>
         /// <param name="timeout">Timeout for HttpWebRequest in seconds.</param>
-        public static LunchMenuDocument GetLunchMenuDocumentForUrl(string url, int timeout)
+        public static LunchRestaurantDocument GetLunchRestaurantDocumentForUrl(string url, int timeout)
         {
-            var document = new LunchMenuDocument();
+            var document = new LunchRestaurantDocument { URL = url };
             var htmlDoc = new HtmlDocument();
             var allowedmimetypes = new[] { "text/html", "text/xml" };
 

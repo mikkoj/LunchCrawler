@@ -1,10 +1,17 @@
-﻿using HtmlAgilityPack;
+﻿using System;
+
+using HtmlAgilityPack;
 
 
-namespace LunchCrawler.Common
+namespace LunchCrawler.Common.Model
 {
-    public class LunchMenuDocument
+    public class LunchRestaurantDocument
     {
+        /// <summary>
+        /// URL for the document.
+        /// </summary>
+        public string URL { get; set; }
+
         /// <summary>
         /// MIME-type for the document.
         /// </summary>

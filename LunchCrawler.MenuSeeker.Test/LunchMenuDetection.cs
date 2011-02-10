@@ -6,8 +6,8 @@ using HtmlAgilityPack;
 
 using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
+using LunchCrawler.Common.Model;
 using LunchCrawler.Data.Local;
-using LunchCrawler.MenuSeeker.Test.Model;
 
 
 namespace LunchCrawler.MenuSeeker.Test

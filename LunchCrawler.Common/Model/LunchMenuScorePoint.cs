@@ -1,9 +1,7 @@
-﻿using System;
-
-using LunchCrawler.Common.Enums;
+﻿using LunchCrawler.Common.Enums;
 
 
-namespace LunchCrawler.MenuSeeker.Test.Model
+namespace LunchCrawler.Common.Model
 {
     /// <summary>
     /// Represents a single lunch menu -match that was given a point.

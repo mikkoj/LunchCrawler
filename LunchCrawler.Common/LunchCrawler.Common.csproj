@@ -54,13 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ILunchMenuParsingStrategy.cs" />
     <Compile Include="MimeDetector.cs" />
     <Compile Include="Enums\LunchMenuStatus.cs" />
     <Compile Include="Enums\StringMatchType.cs" />
     <Compile Include="Enums\LunchMenuFeatureType.cs" />
     <Compile Include="Enums\LunchMenuDetectionLocation.cs" />
-    <Compile Include="Interfaces\ILunchMenuSearchEngine.cs" />
-    <Compile Include="Interfaces\ILunchMenuSeeker.cs" />
+    <Compile Include="Interfaces\ILunchRestaurantSearchEngine.cs" />
+    <Compile Include="Interfaces\ILunchRestaurantSeeker.cs" />
     <Compile Include="Interfaces\ISearchEngine.cs" />
     <Compile Include="IoC\LoggingInjectModule.cs" />
     <Compile Include="Logging\ILogger.cs" />
@@ -69,7 +70,12 @@
     <Compile Include="Logging\NLogFactory.cs" />
     <Compile Include="Logging\NLogLogger.cs" />
     <Compile Include="Logging\NullLogger.cs" />
-    <Compile Include="LunchMenuDocument.cs" />
+    <Compile Include="Model\LunchMenu.cs" />
+    <Compile Include="Model\LunchMenuFeature.cs" />
+    <Compile Include="Model\LunchMenuFoodItem.cs" />
+    <Compile Include="Model\LunchRestaurantDocument.cs" />
+    <Compile Include="Model\LunchMenuScorePoint.cs" />
+    <Compile Include="Model\LunchMenuScores.cs" />
     <Compile Include="UrlComparer.cs" />
     <Compile Include="Utils.Html.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

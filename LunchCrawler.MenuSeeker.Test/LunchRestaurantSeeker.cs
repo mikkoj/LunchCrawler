@@ -10,26 +10,25 @@ using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
 using LunchCrawler.Common.Interfaces;
 using LunchCrawler.Common.Logging;
+using LunchCrawler.Common.Model;
 using LunchCrawler.Data.Local;
-using LunchCrawler.MenuSeeker.Test.Model;
 using LunchCrawler.MenuSeeker.Test.Properties;
 
 
 namespace LunchCrawler.MenuSeeker.Test
 {
-    [Serializable]
-    public class LunchMenuSeeker : ILunchMenuSeeker
+    public class LunchRestaurantSeeker : ILunchRestaurantSeeker
     {
         public ILogger Logger { get; set; }
 
-        public LunchMenuSeeker()
+        public LunchRestaurantSeeker()
         {
             Logger = NullLogger.Instance;
         }
 
-        private readonly ILunchMenuSearchEngine _searchEngine;
+        private readonly ILunchRestaurantSearchEngine _searchEngine;
 
-        public LunchMenuSeeker(ILunchMenuSearchEngine searchEngine)
+        public LunchRestaurantSeeker(ILunchRestaurantSearchEngine searchEngine)
         {
             Logger = NullLogger.Instance;
             _searchEngine = searchEngine;
@@ -37,6 +36,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
         private static readonly IEnumerable<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
         private static readonly IList<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
+
 
         /// <summary>
         /// Creates the search query combinations based on category levels.
@@ -71,7 +71,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
             try
             {
-                var task = new ThreadStart(SeekLunchMenus);
+                var task = new ThreadStart(SeekLunchRestaurants);
                 var thread = new Thread(task, maxStackSize);
                 thread.Start();
                 if (!thread.Join(TimeSpan.FromMinutes(timeoutMinutes)))
@@ -93,10 +93,10 @@ namespace LunchCrawler.MenuSeeker.Test
 
 
         /// <summary>
-        /// Starts seeking for new lunch menus based on search keywords and ones added manually.
+        /// Starts seeking for new lunch restaurants based on search keywords and ones added manually.
         /// Scores all found URLs.
         /// </summary>
-        public void SeekLunchMenus()
+        public void SeekLunchRestaurants()
         {
             if (_searchEngine == null)
             {
@@ -106,13 +106,15 @@ namespace LunchCrawler.MenuSeeker.Test
 
             Logger.Info("Searching for links through search engines..");
             var searchedUrls = _searchEngine.SearchForLunchMenuURLs(SearchKeywords);
-            var manuallyAddedUrls = LunchDA.Instance.GetLunchMenusWithStatus(LunchMenuStatus.ManuallyAdded);
+            var manuallyAddedUrls = LunchDA.Instance.GetLunchRestaurantsWithStatus(LunchMenuStatus.ManuallyAdded);
 
             var allUrls = searchedUrls.Union(manuallyAddedUrls.Select(m => m.AbsoluteURL))
                                       .Distinct(new UrlComparer());
 
+
             Logger.InfoFormat("Started scoring total of {0} links..", allUrls.Count());
-            Parallel.ForEach(allUrls, ScoreLunchMenu);
+            Parallel.ForEach(allUrls, ScoreLunchRestaurant);
+
 
             // let's also print the detection counts
             var lunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
@@ -124,41 +126,41 @@ namespace LunchCrawler.MenuSeeker.Test
 
 
         /// <summary>
-        /// Scores a single URL as a lunch menu.
+        /// Scores a single URL as a lunch restaurant.
         /// </summary>
-        public void ScoreLunchMenu(string url)
+        public void ScoreLunchRestaurant(string url)
         {
-            var potentialMenu = new LunchMenu
+            var potentialRestaurant = new LunchRestaurant
             {
                 URL = Utils.GetBaseUrl(url), // primary key
                 AbsoluteURL = url,           // used for creating and parsing the model
-                Status = (int)LunchMenuStatus.OK,
+                Status = (int)LunchMenuStatus.OK
             };
 
             try
             {
                 // Check if we already have this one
-                var existingMenu = LunchDA.Instance.FindExistingLunchMenu(potentialMenu.URL);
+                var existingMenu = LunchDA.Instance.FindExistingLunchRestaurant(potentialRestaurant.URL);
 
                 if (existingMenu == null || existingMenu.Status == (int)LunchMenuStatus.CannotConnect)
                 {
-                    var lunchMenuDocument = Utils.GetLunchMenuDocumentForUrl(url, Settings.Default.HTTPTimeoutSeconds);
+                    var lunchMenuDocument = Utils.GetLunchRestaurantDocumentForUrl(url, Settings.Default.HTTPTimeoutSeconds);
                     if (lunchMenuDocument == null)
                     {
                         // no special error handling for now, any HTTP error -> can't connect
-                        potentialMenu.Status = (int)LunchMenuStatus.CannotConnect;
+                        potentialRestaurant.Status = (int)LunchMenuStatus.CannotConnect;
                         LogLunchMenuScores(url, LunchMenuStatus.CannotConnect, new LunchMenuScores());
-                        LunchDA.Instance.UpdateLunchMenu(potentialMenu);
+                        LunchDA.Instance.UpdateLunchRestaurant(potentialRestaurant);
                         return;
                     }
 
                     // let's calculate and log scores
                     var scores = GetScoresForHtmlDocument(lunchMenuDocument);
-                    LogLunchMenuScores(url, (LunchMenuStatus)potentialMenu.Status, scores);
+                    LogLunchMenuScores(url, (LunchMenuStatus)potentialRestaurant.Status, scores);
 
-                    // ..and let's finish the potential menu instance and update the DB
-                    CompletePotentialLunchMenu(lunchMenuDocument, potentialMenu, scores);
-                    LunchDA.Instance.UpdateLunchMenu(potentialMenu);
+                    // ..and let's finish the potential restaurant instance and update the DB
+                    CompletePotentialLunchRestaurant(lunchMenuDocument, potentialRestaurant, scores);
+                    LunchDA.Instance.UpdateLunchRestaurant(potentialRestaurant);
                 }
             }
             catch (EntityException entityEx)
@@ -176,10 +178,11 @@ namespace LunchCrawler.MenuSeeker.Test
             }
         }
 
+        
         /// <summary>
         /// Calculates lunch menu scores for a Html-document.
         /// </summary>
-        private static LunchMenuScores GetScoresForHtmlDocument(LunchMenuDocument lunchMenuDocument)
+        private static LunchMenuScores GetScoresForHtmlDocument(LunchRestaurantDocument lunchMenuDocument)
         {
             // let's create a new detection based on the basic lunch menu keywords
             var lunchMenuDetection = new LunchMenuDetection(BasicLunchMenuKeywords.ToList());
@@ -204,20 +207,25 @@ namespace LunchCrawler.MenuSeeker.Test
         }
 
 
-        private static void CompletePotentialLunchMenu(LunchMenuDocument lunchMenuDocument, LunchMenu potentialMenu, LunchMenuScores scores)
+        /// <summary>
+        /// Completes a potential lunch restaurant instance by calculating points and probability for it.
+        /// </summary>
+        private static void CompletePotentialLunchRestaurant(LunchRestaurantDocument lunchMenuDocument,
+                                                             LunchRestaurant potentialRestaurant,
+                                                             LunchMenuScores scores)
         {
-            potentialMenu.SiteHash = lunchMenuDocument.Hash;
-            potentialMenu.TotalPoints = scores.Points.Sum(p => p.PointsGiven);
-            potentialMenu.LunchMenuProbability = scores.LunchMenuProbability;
+            potentialRestaurant.SiteHash = lunchMenuDocument.Hash;
+            potentialRestaurant.TotalPoints = scores.Points.Sum(p => p.PointsGiven);
+            potentialRestaurant.LunchMenuProbability = scores.LunchMenuProbability;
 
-            potentialMenu.TotalKeywordDetections   = scores.Points.Count(p => p.DetectionType != StringMatchType.NoMatch);
-            potentialMenu.ExactKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Exact);
-            potentialMenu.PartialKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Partial);
-            potentialMenu.FuzzyKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
+            potentialRestaurant.TotalKeywordDetections   = scores.Points.Count(p => p.DetectionType != StringMatchType.NoMatch);
+            potentialRestaurant.ExactKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Exact);
+            potentialRestaurant.PartialKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Partial);
+            potentialRestaurant.FuzzyKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
 
             if (scores.LunchMenuProbability < Settings.Default.LunchMenuProbabilityLimit)
             {
-                potentialMenu.Status = (int)LunchMenuStatus.ShouldSkip;
+                potentialRestaurant.Status = (int)LunchMenuStatus.ShouldSkip;
             }
         }
 

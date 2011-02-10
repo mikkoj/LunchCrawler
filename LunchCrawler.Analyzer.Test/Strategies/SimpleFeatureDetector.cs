@@ -1,28 +1,41 @@
-﻿using System.IO;
-using System.Web;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 using HtmlAgilityPack;
 
-using LunchCrawler.Data.Local;
+using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
+using LunchCrawler.Data.Local;
+
+using LunchMenuFeature = LunchCrawler.Common.Model.LunchMenuFeature;
 
 
-namespace LunchCrawler.Analyzer.Test
+namespace LunchCrawler.Analyzer.Test.Strategies
 {
-    public static class LunchMenuDetection
+    public static class SimpleFeatureDetector
     {
-        private static readonly IList<string> WeekDays = File.ReadAllLines("WeekDays.txt").ToList();
+        public static readonly IList<string> WeekDays = File.ReadAllLines("WeekDays.txt").ToList();
         private const string WeekPattern = @"(viikko|vko|week) (\d+)";
         private const string MoneyPattern = @"\d+([.,]\d+)?\s*?[€e]|[^.](\d+[.,]\d\d)";
 
         private static readonly IList<string> SkipPatterns = File.ReadAllLines("SkipPatterns.txt").ToList();
         private static readonly IList<FoodKeyword> FoodKeywords = LunchDA.Instance.GetAllFoodKeywords();
 
+        public static IList<LunchMenuFeature> DetectFeatures(HtmlDocument document)
+        {
+            return document.DocumentNode.DescendantNodes()
+                           .Where(node => !Utils.ShouldSkipNode(node))
+                           .Select(DetectFeature)
+                           .Where(feature => feature.Type != LunchMenuFeatureType.Unknown)
+                           .ToList();
+        }
 
-        public static LunchMenuFeature DetectFeature(HtmlNode node)
+
+        private static LunchMenuFeature DetectFeature(HtmlNode node)
         {
             var feature = new LunchMenuFeature
             {
@@ -35,7 +48,7 @@ namespace LunchCrawler.Analyzer.Test
                 return feature;
             }
 
-            var nodeText = HttpUtility.HtmlDecode(node.InnerText.ToLower().Trim());
+            var nodeText = Utils.HtmlDecode(node.InnerText.ToLower().Trim());
             if (nodeText == null)
             {
                 return feature;
@@ -67,7 +80,7 @@ namespace LunchCrawler.Analyzer.Test
             var foodDetected = feature.FoodMatchType != StringMatchType.NoMatch;
 
             var moneyDetected = Regex.IsMatch(nodeText, MoneyPattern);
-            
+
             if (foodDetected && moneyDetected)
             {
                 feature.Type = LunchMenuFeatureType.FoodAndMoney;
@@ -90,7 +103,7 @@ namespace LunchCrawler.Analyzer.Test
                 feature.Line = node.Line;
                 feature.LinePosition = node.LinePosition;
                 feature.InnerText = node.InnerText;
-                //feature.OuterHtml = node.OuterHtml;
+                feature.OuterHtml = node.OuterHtml;
                 feature.DetectedNode = node;
             }
 
@@ -125,5 +138,27 @@ namespace LunchCrawler.Analyzer.Test
             var similarity = ls.GetSimilarity(unknownText, knownFood);
             return similarity > 0.75;
         }
+
+        public static void PrintDetectedFeatures(IEnumerable<LunchMenuFeature> detectedFeatures)
+        {
+            Console.OutputEncoding = Encoding.Default;
+            foreach (var feature in detectedFeatures)
+            {
+                if (feature.Type == LunchMenuFeatureType.Weekday)
+                {
+                    Console.WriteLine();
+                }
+
+                var inputdata = Encoding.Unicode.GetBytes(Utils.HtmlDecode(feature.InnerText.Trim()));
+                var consoledata = Console.OutputEncoding.GetString(Encoding.Convert(Encoding.Unicode, Console.OutputEncoding, inputdata));
+
+                Console.WriteLine("{0} ({1}, {2}): {3}",
+                                  feature.Type,
+                                  feature.Line,
+                                  feature.LinePosition,
+                                  consoledata);
+            }
+        }
+
     }
 }
