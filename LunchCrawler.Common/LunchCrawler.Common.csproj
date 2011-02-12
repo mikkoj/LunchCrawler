@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\WeekDay.cs" />
     <Compile Include="Interfaces\ILunchMenuParsingStrategy.cs" />
     <Compile Include="MimeDetector.cs" />
     <Compile Include="Enums\LunchMenuStatus.cs" />
@@ -88,6 +90,10 @@
     <Compile Include="Utils.General.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LunchCrawler.Data.Local\LunchCrawler.Data.Local.csproj">
+      <Project>{EC121545-A07D-4589-8FDE-7B16D7B89B1C}</Project>
+      <Name>LunchCrawler.Data.Local</Name>
+    </ProjectReference>
     <ProjectReference Include="..\packages\HtmlAgilityPack.Custom\HtmlAgilityPack\HtmlAgilityPack.csproj">
       <Project>{193BB801-054F-4729-9D5D-FCE1E32594BF}</Project>
       <Name>HtmlAgilityPack</Name>

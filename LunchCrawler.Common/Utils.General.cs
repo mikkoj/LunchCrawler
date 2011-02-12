@@ -85,7 +85,7 @@ namespace LunchCrawler.Common
             return !source.Any();
         }
 
-        public static string ParseInnerError(this Exception ex)
+        public static string ParseInnerException(this Exception ex)
         {
             if (ex == null || string.IsNullOrEmpty(ex.Message))
             {
@@ -95,7 +95,7 @@ namespace LunchCrawler.Common
             var error = new StringBuilder(ex.Message);
             if (ex.InnerException != null)
             {
-                error.Append("\n" + ParseInnerError(ex.InnerException));
+                error.Append("\n" + ParseInnerException(ex.InnerException));
             }
 
             return error.ToString();

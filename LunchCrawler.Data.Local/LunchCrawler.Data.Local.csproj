@@ -58,23 +58,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Lunch.sqlite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Lunch.sqlite" />
     <EntityDeploy Include="LunchModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>LunchModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.Config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LunchCrawler.Common\LunchCrawler.Common.csproj">
-      <Project>{6348B9F6-5DF8-4FBE-9A1A-6283459B00D7}</Project>
-      <Name>LunchCrawler.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

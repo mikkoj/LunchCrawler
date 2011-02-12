@@ -3,9 +3,6 @@ using System.Linq;
 using System.Data;
 using System.Collections.Generic;
 
-using LunchCrawler.Common;
-using LunchCrawler.Common.Enums;
-
 
 namespace LunchCrawler.Data.Local
 {
@@ -100,20 +97,33 @@ namespace LunchCrawler.Data.Local
             }
         }
 
-        public IList<LunchRestaurant> GetLunchRestaurantsWithStatus(LunchMenuStatus status)
+        /// <summary>
+        /// Get lunch restaurants with a given status and minimum probability.
+        /// </summary>
+        public IList<LunchRestaurant> GetLunchRestaurants(int status, decimal minProbability)
         {
             using (var entityContext = new LunchEntities())
             {
-                return entityContext.LunchRestaurants.Where(rt => rt.Status == (int)status).ToList();
+                return entityContext.LunchRestaurants.Where(rt => rt.Status == status &&
+                                                                  rt.LunchMenuProbability > minProbability).ToList();
             }
         }
 
-        public IList<LunchRestaurant> GetLunchRestaurantsWithStates(params LunchMenuStatus[] states)
+
+        public IList<LunchRestaurant> GetLunchRestaurants(int status)
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                return entityContext.LunchRestaurants.Where(rt => rt.Status == status).ToList();
+            }
+        }
+
+        public IList<LunchRestaurant> GetLunchRestaurants(params int[] states)
         {
             using (var entityContext = new LunchEntities())
             {
                 return entityContext.LunchRestaurants
-                                    .Where(rt => states.Any(status => (int)status == rt.Status))
+                                    .Where(rt => states.Any(status => status == rt.Status))
                                     .ToList();
             }
         }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 
-using LunchCrawler.Common.Interfaces;
+using LunchCrawler.Common.Enums;
 
 
 namespace LunchCrawler.Common.Model
@@ -12,9 +12,14 @@ namespace LunchCrawler.Common.Model
     public class LunchMenu
     {
         /// <summary>
-        /// Parsing strategy used when parsing the lunch menu.
+        /// Food items for given days of the week.
         /// </summary>
-        public ILunchMenuParsingStrategy ParsingStrategy { get; set; }
+        public IDictionary<WeekDay, List<LunchMenuFoodItem>> FoodItems;
+
+        public LunchMenu()
+        {
+            FoodItems = new Dictionary<WeekDay, List<LunchMenuFoodItem>>();
+        }
 
         /// <summary>
         /// Confidence of parsing success (0 - 1).
@@ -30,10 +35,5 @@ namespace LunchCrawler.Common.Model
         /// Week number the menu is for.
         /// </summary>
         public int? WeekNumber { get; set; }
-
-        /// <summary>
-        /// Food items for given days of the week.
-        /// </summary>
-        public IDictionary<DayOfWeek, LunchMenuFoodItem> FoodItems { get; set; }
     }
 }

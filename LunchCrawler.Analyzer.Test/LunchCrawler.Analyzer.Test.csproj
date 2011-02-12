@@ -50,6 +50,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=2.4.4.705, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.2.4.4.705\lib\NET40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Configuration">
+      <HintPath>..\packages\Autofac.2.4.4.705\lib\NET40\Autofac.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="SimMetrics, Version=1.1.2458.37350, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SimMetrics.dll</HintPath>
@@ -78,6 +84,7 @@
     <Compile Include="LunchRestaurantAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strategies\ParsingStrategyBase.cs" />
     <Compile Include="Strategies\SimpleFeatureDetector.cs" />
     <Compile Include="Strategies\StrictFiveDayStrategy.cs" />
   </ItemGroup>
@@ -93,6 +100,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LunchCrawler.Common\LunchCrawler.Common.csproj">

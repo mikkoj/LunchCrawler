@@ -1,6 +1,5 @@
-﻿using HtmlAgilityPack;
-
-using LunchCrawler.Common.Model;
+﻿using LunchCrawler.Common.Model;
+using LunchCrawler.Data.Local;
 
 
 namespace LunchCrawler.Common.Interfaces
@@ -12,6 +11,6 @@ namespace LunchCrawler.Common.Interfaces
     public interface ILunchMenuParsingStrategy
     {
         int Priority { get; }
-        LunchMenu ParseDocument(HtmlDocument document);
+        LunchMenu ParseLunchMenu(LunchRestaurant document);
     }
 }

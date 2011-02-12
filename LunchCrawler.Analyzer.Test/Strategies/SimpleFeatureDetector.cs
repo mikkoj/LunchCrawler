@@ -83,17 +83,17 @@ namespace LunchCrawler.Analyzer.Test.Strategies
 
             if (foodDetected && moneyDetected)
             {
-                feature.Type = LunchMenuFeatureType.FoodAndMoney;
+                feature.Type = LunchMenuFeatureType.FoodItemAndPrice;
             }
 
             if (foodDetected)
             {
-                feature.Type = LunchMenuFeatureType.Food;
+                feature.Type = LunchMenuFeatureType.FoodItem;
             }
 
             if (moneyDetected)
             {
-                feature.Type = LunchMenuFeatureType.Money;
+                feature.Type = LunchMenuFeatureType.Price;
             }
 
 
@@ -141,12 +141,17 @@ namespace LunchCrawler.Analyzer.Test.Strategies
 
         public static void PrintDetectedFeatures(IEnumerable<LunchMenuFeature> detectedFeatures)
         {
+            if (detectedFeatures == null)
+            {
+                return;
+            }
+
             Console.OutputEncoding = Encoding.Default;
             foreach (var feature in detectedFeatures)
             {
                 if (feature.Type == LunchMenuFeatureType.Weekday)
                 {
-                    Console.WriteLine();
+                    //Console.WriteLine();
                 }
 
                 var inputdata = Encoding.Unicode.GetBytes(Utils.HtmlDecode(feature.InnerText.Trim()));

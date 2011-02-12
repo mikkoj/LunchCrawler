@@ -23,6 +23,9 @@ namespace LunchCrawler.Analyzer.Test
             Logger = NullLogger.Instance;
         }
 
+        /// <summary>
+        /// List of parsing strategies injected by Dependency Injection.
+        /// </summary>
         private readonly IEnumerable<ILunchMenuParsingStrategy> _parsingStrategies;
 
         public LunchRestaurantAnalyzer(IEnumerable<ILunchMenuParsingStrategy> strategies)
@@ -76,45 +79,69 @@ namespace LunchCrawler.Analyzer.Test
                 return;
             }
 
-            var restaurantsToBeAnalyzed = LunchDA.Instance.GetLunchRestaurantsWithStatus(LunchMenuStatus.OK)
-                                                          .Select(rt => rt.AbsoluteURL);
-
-            Logger.InfoFormat("Started analyzing total of {0} restaurants..", restaurantsToBeAnalyzed.Count());
-            Parallel.ForEach(restaurantsToBeAnalyzed, AnalyzeLunchRestaurant);
+            var restaurantsToBeAnalyzed = LunchDA.Instance.GetLunchRestaurants((int)LunchMenuStatus.OK, 0.50M);
+            Logger.InfoFormat("Started analyzing total of {0} restaurants..\n", restaurantsToBeAnalyzed.Count());
+            Parallel.ForEach(restaurantsToBeAnalyzed, AnalyzeLunchRestaurantWithTimeout);
         }
 
-        public void AnalyzeLunchRestaurant(string url)
-        {
-            var doc = Utils.GetLunchRestaurantDocumentForUrl(url);
-            if (ShouldSkipAnalysis(doc))
-            {
-                return;
-            }
 
+        /// <summary>
+        /// Starts a analyzing task for a given URL.
+        /// The task will be cancelled if it times out.
+        /// </summary>
+        private void AnalyzeLunchRestaurantWithTimeout(LunchRestaurant restaurant)
+        {
             // let's analyze based on parsing strategies' priority
             var strategies = _parsingStrategies.OrderByDescending(st => st.Priority);
-            LunchMenu parseResult = null;
-            foreach (var strategy in strategies)
+
+            // we'll cancel the process after timeout in case parsing goes wrong
+            // TODO: timeout settings in DB
+            const int timeoutForProcessing = 240000;
+            var cts = new CancellationTokenSource();
+            var token = cts.Token;
+            new Thread(() =>
             {
-                parseResult = strategy.ParseDocument(doc.HtmlDocument);
-                if (parseResult.Confidence > 0.90M)
+                Thread.Sleep(timeoutForProcessing);
+                cts.Cancel();
+            }).Start();
+
+            try
+            {
+                Task.Factory.StartNew(() =>
                 {
-                    break;
-                }
+                    LunchMenu parseResult = null;
+
+                    foreach (var strategy in strategies)
+                    {
+                        parseResult = strategy.ParseLunchMenu(restaurant);
+
+                        // TODO: confidence settings in DB
+                        if (parseResult.Confidence > 0.90M)
+                        {
+                            break;
+                        }
+                    }
+
+                    CompleteLunchRestaurantAnalysis(parseResult);
+                }).Wait(token);
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.ErrorFormat("Analysis timed out for URL: {0}", restaurant.AbsoluteURL);
             }
 
-            CompleteLunchRestaurantAnalysis(parseResult);
+            Console.WriteLine("---------------------------------------------------------------------------------\n");
         }
 
-        private static void CompleteLunchRestaurantAnalysis(LunchMenu parseResult)
+
+        private void CompleteLunchRestaurantAnalysis(LunchMenu parseResult)
         {
+            if (parseResult.FoodItems.IsEmpty())
+            {
+                Logger.InfoFormat("-> {0} - no results.\n", parseResult.RestaurantKey);
+            }
+
             // DB update + print result
-        }
-
-        private static bool ShouldSkipAnalysis(LunchRestaurantDocument doc)
-        {
-            var existingDoc = LunchDA.Instance.FindExistingLunchRestaurant(doc.URL);
-            return existingDoc != null && existingDoc.SiteHash.Equals(doc.Hash);
         }
     }
 }

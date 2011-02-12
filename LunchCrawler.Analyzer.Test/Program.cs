@@ -1,4 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
+
+using Autofac;
+
+using LunchCrawler.Common;
+using LunchCrawler.Common.IoC;
+using LunchCrawler.Common.Logging;
 
 
 namespace LunchCrawler.Analyzer.Test
@@ -7,20 +15,55 @@ namespace LunchCrawler.Analyzer.Test
     {
         static void Main()
         {
-            var parser = new LunchRestaurantAnalyzer();
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
-            parser.AnalyzeLunchRestaurant(@"http://blanko.net/cgi-bin/printtilounaslista.cgi");
-            Separator();
-            parser.AnalyzeLunchRestaurant(@"http://www.veritasstadion.com/cgi/menu.htm");
-            Separator();
-            parser.AnalyzeLunchRestaurant(@"http://www.kupittaanpaviljonki.fi/lounaslista/");
+            var container = BuildComponentContainer();
+            var lunchRestaurantAnalyzer = container.Resolve<LunchRestaurantAnalyzer>();
 
+            Console.WriteLine("-> Started analyzing lunch restaurants..");
+            var watch = new Stopwatch();
+            watch.Start();
+
+            lunchRestaurantAnalyzer.Start();
+
+            watch.Stop();
+
+            Console.WriteLine("\n\nLunch menu analyzing done in {0}", watch.Elapsed);
             Console.ReadLine();
         }
 
-        private static void Separator()
+
+        /// <summary>
+        /// Uses dependency injection to build an Autofac container for the assembly.
+        /// </summary>
+        private static IContainer BuildComponentContainer()
         {
-            Console.WriteLine("\n\n--------------------------------------------------------------\n");
+            // Autofac builder
+            var builder = new ContainerBuilder();
+
+            // NLogFactory will create ILoggers
+            builder.RegisterModule(new LoggingInjectModule(new NLogFactory()));
+
+            // let's create the catalog based on the types in the assembly
+            var assembly = Assembly.GetExecutingAssembly();
+            builder.RegisterAssemblyTypes(assembly);
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+
+            // finally, let's build and return the container
+            return builder.Build();
+        }
+
+
+        static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            if (ex == null)
+            {
+                Console.WriteLine("Unknown error occurred");
+                return;
+            }
+
+            Console.WriteLine("Unknown error: " + ex.ParseInnerException());
         }
     }
 }

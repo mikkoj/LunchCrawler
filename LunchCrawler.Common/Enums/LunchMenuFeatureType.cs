@@ -6,9 +6,9 @@
 
         Week = 1,
         Weekday = 2,
-        Food = 3,
-        Money = 4,
-        FoodAndMoney = 5,
+        FoodItem = 3,
+        Price = 4,
+        FoodItemAndPrice = 5,
         OpeningHours = 6,
     }
 }

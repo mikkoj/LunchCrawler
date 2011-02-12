@@ -106,7 +106,7 @@ namespace LunchCrawler.MenuSeeker.Test
 
             Logger.Info("Searching for links through search engines..");
             var searchedUrls = _searchEngine.SearchForLunchMenuURLs(SearchKeywords);
-            var manuallyAddedUrls = LunchDA.Instance.GetLunchRestaurantsWithStatus(LunchMenuStatus.ManuallyAdded);
+            var manuallyAddedUrls = LunchDA.Instance.GetLunchRestaurants((int)LunchMenuStatus.ManuallyAdded);
 
             var allUrls = searchedUrls.Union(manuallyAddedUrls.Select(m => m.AbsoluteURL))
                                       .Distinct(new UrlComparer());
@@ -165,7 +165,7 @@ namespace LunchCrawler.MenuSeeker.Test
             }
             catch (EntityException entityEx)
             {
-                var errorMessage = entityEx.ParseInnerError();
+                var errorMessage = entityEx.ParseInnerException();
                 if (errorMessage.ToLowerInvariant().Contains("database is locked"))
                 {
                     Logger.Fatal("SQLite database is locked.");
@@ -222,11 +222,6 @@ namespace LunchCrawler.MenuSeeker.Test
             potentialRestaurant.ExactKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Exact);
             potentialRestaurant.PartialKeywordDetections = scores.Points.Count(p => p.DetectionType == StringMatchType.Partial);
             potentialRestaurant.FuzzyKeywordDetections   = scores.Points.Count(p => p.DetectionType == StringMatchType.Fuzzy);
-
-            if (scores.LunchMenuProbability < Settings.Default.LunchMenuProbabilityLimit)
-            {
-                potentialRestaurant.Status = (int)LunchMenuStatus.ShouldSkip;
-            }
         }
 
 
