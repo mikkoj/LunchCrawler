@@ -34,7 +34,7 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int BingSearchCountForOneSearch {
             get {
                 return ((int)(this["BingSearchCountForOneSearch"]));
@@ -52,7 +52,7 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int YahooSearchCountForOneSearch {
             get {
                 return ((int)(this["YahooSearchCountForOneSearch"]));
@@ -74,6 +74,15 @@ namespace LunchCrawler.MenuSeeker.Test.Properties {
         public int HTTPTimeoutSeconds {
             get {
                 return ((int)(this["HTTPTimeoutSeconds"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int DeepLinkRecursionLevel {
+            get {
+                return ((int)(this["DeepLinkRecursionLevel"]));
             }
         }
     }

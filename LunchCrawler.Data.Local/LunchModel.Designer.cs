@@ -68,6 +68,22 @@ namespace LunchCrawler.Data.Local
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
+        public ObjectSet<DeepLinkKeyword> DeepLinkKeywords
+        {
+            get
+            {
+                if ((_DeepLinkKeywords == null))
+                {
+                    _DeepLinkKeywords = base.CreateObjectSet<DeepLinkKeyword>("DeepLinkKeywords");
+                }
+                return _DeepLinkKeywords;
+            }
+        }
+        private ObjectSet<DeepLinkKeyword> _DeepLinkKeywords;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
         public ObjectSet<FoodKeyword> FoodKeywords
         {
             get
@@ -116,22 +132,6 @@ namespace LunchCrawler.Data.Local
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<SearchKeyword> SearchKeywords
-        {
-            get
-            {
-                if ((_SearchKeywords == null))
-                {
-                    _SearchKeywords = base.CreateObjectSet<SearchKeyword>("SearchKeywords");
-                }
-                return _SearchKeywords;
-            }
-        }
-        private ObjectSet<SearchKeyword> _SearchKeywords;
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
         public ObjectSet<LunchRestaurant> LunchRestaurants
         {
             get
@@ -144,9 +144,49 @@ namespace LunchCrawler.Data.Local
             }
         }
         private ObjectSet<LunchRestaurant> _LunchRestaurants;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<RestaurantDeepLink> RestaurantDeepLinks
+        {
+            get
+            {
+                if ((_RestaurantDeepLinks == null))
+                {
+                    _RestaurantDeepLinks = base.CreateObjectSet<RestaurantDeepLink>("RestaurantDeepLinks");
+                }
+                return _RestaurantDeepLinks;
+            }
+        }
+        private ObjectSet<RestaurantDeepLink> _RestaurantDeepLinks;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<SearchKeyword> SearchKeywords
+        {
+            get
+            {
+                if ((_SearchKeywords == null))
+                {
+                    _SearchKeywords = base.CreateObjectSet<SearchKeyword>("SearchKeywords");
+                }
+                return _SearchKeywords;
+            }
+        }
+        private ObjectSet<SearchKeyword> _SearchKeywords;
 
         #endregion
         #region AddTo Methods
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the DeepLinkKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToDeepLinkKeywords(DeepLinkKeyword deepLinkKeyword)
+        {
+            base.AddObject("DeepLinkKeywords", deepLinkKeyword);
+        }
     
         /// <summary>
         /// Deprecated Method for adding a new object to the FoodKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
@@ -173,19 +213,27 @@ namespace LunchCrawler.Data.Local
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the SearchKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
-        /// </summary>
-        public void AddToSearchKeywords(SearchKeyword searchKeyword)
-        {
-            base.AddObject("SearchKeywords", searchKeyword);
-        }
-    
-        /// <summary>
         /// Deprecated Method for adding a new object to the LunchRestaurants EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
         public void AddToLunchRestaurants(LunchRestaurant lunchRestaurant)
         {
             base.AddObject("LunchRestaurants", lunchRestaurant);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the RestaurantDeepLinks EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToRestaurantDeepLinks(RestaurantDeepLink restaurantDeepLink)
+        {
+            base.AddObject("RestaurantDeepLinks", restaurantDeepLink);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the SearchKeywords EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToSearchKeywords(SearchKeyword searchKeyword)
+        {
+            base.AddObject("SearchKeywords", searchKeyword);
         }
 
         #endregion
@@ -195,6 +243,139 @@ namespace LunchCrawler.Data.Local
     #endregion
     
     #region Entities
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="DeepLinkKeyword")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class DeepLinkKeyword : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new DeepLinkKeyword object.
+        /// </summary>
+        /// <param name="word">Initial value of the Word property.</param>
+        /// <param name="weight">Initial value of the Weight property.</param>
+        /// <param name="detectionCount">Initial value of the DetectionCount property.</param>
+        /// <param name="contentType">Initial value of the ContentType property.</param>
+        public static DeepLinkKeyword CreateDeepLinkKeyword(global::System.String word, global::System.Int32 weight, global::System.Int64 detectionCount, global::System.Int32 contentType)
+        {
+            DeepLinkKeyword deepLinkKeyword = new DeepLinkKeyword();
+            deepLinkKeyword.Word = word;
+            deepLinkKeyword.Weight = weight;
+            deepLinkKeyword.DetectionCount = detectionCount;
+            deepLinkKeyword.ContentType = contentType;
+            return deepLinkKeyword;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Word
+        {
+            get
+            {
+                return _Word;
+            }
+            set
+            {
+                if (_Word != value)
+                {
+                    OnWordChanging(value);
+                    ReportPropertyChanging("Word");
+                    _Word = StructuralObject.SetValidValue(value, false);
+                    ReportPropertyChanged("Word");
+                    OnWordChanged();
+                }
+            }
+        }
+        private global::System.String _Word;
+        partial void OnWordChanging(global::System.String value);
+        partial void OnWordChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 Weight
+        {
+            get
+            {
+                return _Weight;
+            }
+            set
+            {
+                OnWeightChanging(value);
+                ReportPropertyChanging("Weight");
+                _Weight = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Weight");
+                OnWeightChanged();
+            }
+        }
+        private global::System.Int32 _Weight;
+        partial void OnWeightChanging(global::System.Int32 value);
+        partial void OnWeightChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 DetectionCount
+        {
+            get
+            {
+                return _DetectionCount;
+            }
+            set
+            {
+                OnDetectionCountChanging(value);
+                ReportPropertyChanging("DetectionCount");
+                _DetectionCount = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DetectionCount");
+                OnDetectionCountChanged();
+            }
+        }
+        private global::System.Int64 _DetectionCount;
+        partial void OnDetectionCountChanging(global::System.Int64 value);
+        partial void OnDetectionCountChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ContentType
+        {
+            get
+            {
+                return _ContentType;
+            }
+            set
+            {
+                OnContentTypeChanging(value);
+                ReportPropertyChanging("ContentType");
+                _ContentType = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ContentType");
+                OnContentTypeChanged();
+            }
+        }
+        private global::System.Int32 _ContentType;
+        partial void OnContentTypeChanging(global::System.Int32 value);
+        partial void OnContentTypeChanged();
+
+        #endregion
+    
+    }
     
     /// <summary>
     /// No Metadata Documentation available.
@@ -1043,6 +1224,113 @@ namespace LunchCrawler.Data.Local
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="RestaurantDeepLink")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class RestaurantDeepLink : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new RestaurantDeepLink object.
+        /// </summary>
+        /// <param name="deepLinkURL">Initial value of the DeepLinkURL property.</param>
+        /// <param name="contentType">Initial value of the ContentType property.</param>
+        /// <param name="restaurantURL">Initial value of the RestaurantURL property.</param>
+        public static RestaurantDeepLink CreateRestaurantDeepLink(global::System.String deepLinkURL, global::System.Int32 contentType, global::System.String restaurantURL)
+        {
+            RestaurantDeepLink restaurantDeepLink = new RestaurantDeepLink();
+            restaurantDeepLink.DeepLinkURL = deepLinkURL;
+            restaurantDeepLink.ContentType = contentType;
+            restaurantDeepLink.RestaurantURL = restaurantURL;
+            return restaurantDeepLink;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String DeepLinkURL
+        {
+            get
+            {
+                return _DeepLinkURL;
+            }
+            set
+            {
+                if (_DeepLinkURL != value)
+                {
+                    OnDeepLinkURLChanging(value);
+                    ReportPropertyChanging("DeepLinkURL");
+                    _DeepLinkURL = StructuralObject.SetValidValue(value, false);
+                    ReportPropertyChanged("DeepLinkURL");
+                    OnDeepLinkURLChanged();
+                }
+            }
+        }
+        private global::System.String _DeepLinkURL;
+        partial void OnDeepLinkURLChanging(global::System.String value);
+        partial void OnDeepLinkURLChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ContentType
+        {
+            get
+            {
+                return _ContentType;
+            }
+            set
+            {
+                OnContentTypeChanging(value);
+                ReportPropertyChanging("ContentType");
+                _ContentType = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ContentType");
+                OnContentTypeChanged();
+            }
+        }
+        private global::System.Int32 _ContentType;
+        partial void OnContentTypeChanging(global::System.Int32 value);
+        partial void OnContentTypeChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String RestaurantURL
+        {
+            get
+            {
+                return _RestaurantURL;
+            }
+            set
+            {
+                OnRestaurantURLChanging(value);
+                ReportPropertyChanging("RestaurantURL");
+                _RestaurantURL = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("RestaurantURL");
+                OnRestaurantURLChanged();
+            }
+        }
+        private global::System.String _RestaurantURL;
+        partial void OnRestaurantURLChanging(global::System.String value);
+        partial void OnRestaurantURLChanged();
+
+        #endregion
+    
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
     [EdmEntityTypeAttribute(NamespaceName="LunchModel", Name="SearchKeyword")]
     [Serializable()]
     [DataContractAttribute(IsReference=true)]
@@ -1065,30 +1353,6 @@ namespace LunchCrawler.Data.Local
 
         #endregion
         #region Primitive Properties
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Decimal> SuccessRate
-        {
-            get
-            {
-                return _SuccessRate;
-            }
-            set
-            {
-                OnSuccessRateChanging(value);
-                ReportPropertyChanging("SuccessRate");
-                _SuccessRate = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("SuccessRate");
-                OnSuccessRateChanged();
-            }
-        }
-        private Nullable<global::System.Decimal> _SuccessRate;
-        partial void OnSuccessRateChanging(Nullable<global::System.Decimal> value);
-        partial void OnSuccessRateChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1116,6 +1380,30 @@ namespace LunchCrawler.Data.Local
         private global::System.String _QueryKeyword;
         partial void OnQueryKeywordChanging(global::System.String value);
         partial void OnQueryKeywordChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Decimal> SuccessRate
+        {
+            get
+            {
+                return _SuccessRate;
+            }
+            set
+            {
+                OnSuccessRateChanging(value);
+                ReportPropertyChanging("SuccessRate");
+                _SuccessRate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SuccessRate");
+                OnSuccessRateChanged();
+            }
+        }
+        private Nullable<global::System.Decimal> _SuccessRate;
+        partial void OnSuccessRateChanging(Nullable<global::System.Decimal> value);
+        partial void OnSuccessRateChanged();
     
         /// <summary>
         /// No Metadata Documentation available.

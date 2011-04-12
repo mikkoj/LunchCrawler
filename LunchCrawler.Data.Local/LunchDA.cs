@@ -72,6 +72,34 @@ namespace LunchCrawler.Data.Local
             }
         }
 
+        public void UpdateDeepLinkKeywordDetectionCounts(IDictionary<string, int> keywordCounts)
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                foreach (var keywordPair in keywordCounts)
+                {
+                    var keywordName = keywordPair.Key;
+                    var keywordCount = keywordPair.Value;
+
+                    var existingKeyword = entityContext.DeepLinkKeywords
+                                                       .FirstOrDefault(keyword => keyword.Word.Equals(keywordName,
+                                                                                                      StringComparison.InvariantCultureIgnoreCase));
+                    if (existingKeyword == null)
+                    {
+                        continue;
+                    }
+
+                    var existingDetectionCount = existingKeyword.DetectionCount;
+                    var newDetectionCount = existingDetectionCount + keywordCount;
+
+                    existingKeyword.DetectionCount = newDetectionCount;
+                }
+
+                entityContext.SaveChanges();
+            }
+        }
+
+
 
         public IList<FoodKeyword> GetAllFoodKeywords()
         {
@@ -86,6 +114,14 @@ namespace LunchCrawler.Data.Local
             using (var entityContext = new LunchEntities())
             {
                 return entityContext.LunchMenuKeywords.ToList();
+            }
+        }
+
+        public IEnumerable<DeepLinkKeyword> GetAllDeepLinkKeywords()
+        {
+            using (var entityContext = new LunchEntities())
+            {
+                return entityContext.DeepLinkKeywords.ToList();
             }
         }
 
@@ -183,6 +219,43 @@ namespace LunchCrawler.Data.Local
                 throw;
             }
         }
+
+        /// <summary>
+        /// Adds a new lunch restaurant or updates an existing one.
+        /// </summary>
+        public void UpdateLunchRestaurantDeepLinks(string restaurantUrl, IList<RestaurantDeepLink> deepLinks)
+        {
+            if (deepLinks == null)
+            {
+                return;
+            }
+
+            try
+            {
+                using (var entityContext = new LunchEntities())
+                {
+                    foreach (var deepLink in deepLinks)
+                    {
+                        deepLink.RestaurantURL = restaurantUrl;
+                        entityContext.RestaurantDeepLinks.AddObject(deepLink);
+                    }
+
+                    entityContext.SaveChanges();
+                }
+            }
+            catch (UpdateException updateException)
+            {
+                var baseError = updateException.GetBaseException();
+                if (baseError.Message.Contains("not unique"))
+                {
+                    return;
+                }
+
+                throw;
+            }
+        }
+
+        
 
         public LunchMenuKeyword GetLunchMenuKeyword(string word)
         {

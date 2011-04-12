@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HtmlAgilityPack.Custom", "H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlAgilityPack", "packages\HtmlAgilityPack.Custom\HtmlAgilityPack\HtmlAgilityPack.csproj", "{193BB801-054F-4729-9D5D-FCE1E32594BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunchCrawler.Tests", "LunchCrawler.Tests\LunchCrawler.Tests.csproj", "{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,16 @@ Global
 		{193BB801-054F-4729-9D5D-FCE1E32594BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{193BB801-054F-4729-9D5D-FCE1E32594BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{193BB801-054F-4729-9D5D-FCE1E32594BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3C9A3AC8-B86E-4AF9-9327-64D996BC3DBE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

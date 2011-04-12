@@ -14,6 +14,11 @@ namespace LunchCrawler.Common.Model
         public LunchMenuDetectionLocation DetectionLocation { get; set; }
 
         /// <summary>
+        /// Type for the deep link content (monday, tuesday.. or opening hours, contact etc.)
+        /// </summary>
+        public DeepLinkContentType DeepLinkContentType { get; set; }
+
+        /// <summary>
         /// Determines the type of the match (exact, partial, fuzzy etc.)
         /// </summary>
         public StringMatchType DetectionType { get; set; }

@@ -6,12 +6,23 @@
     <edmx:StorageModels>
     <Schema Namespace="LunchModel.Store" Alias="Self" Provider="System.Data.SQLite" ProviderManifestToken="ISO8601" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="LunchModelStoreContainer">
+          <EntitySet Name="DeepLinkKeywords" EntityType="LunchModel.Store.DeepLinkKeywords" store:Type="Tables" />
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.Store.FoodKeywords" store:Type="Tables" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.Store.LunchMenuFeatures" store:Type="Tables" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.Store.LunchMenuKeywords" store:Type="Tables" />
           <EntitySet Name="LunchRestaurants" EntityType="LunchModel.Store.LunchRestaurants" store:Type="Tables" />
+          <EntitySet Name="RestaurantDeepLinks" EntityType="LunchModel.Store.RestaurantDeepLinks" store:Type="Tables" />
           <EntitySet Name="SearchKeywords" EntityType="LunchModel.Store.SearchKeywords" store:Type="Tables" />
         </EntityContainer>
+        <EntityType Name="DeepLinkKeywords">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Name="Word" Type="nvarchar" Nullable="false" />
+          <Property Name="Weight" Type="int" Nullable="false" />
+          <Property Name="DetectionCount" Type="integer" Nullable="false" />
+          <Property Name="ContentType" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="FoodKeywords">
           <Key>
             <PropertyRef Name="FoodKeyword" />
@@ -61,6 +72,14 @@
           <Property Name="DateAdded" Type="datetime" Nullable="false" />
           <Property Name="DateUpdated" Type="datetime" />
         </EntityType>
+        <EntityType Name="RestaurantDeepLinks">
+          <Key>
+            <PropertyRef Name="DeepLinkURL" />
+          </Key>
+          <Property Name="DeepLinkURL" Type="nvarchar" Nullable="false" />
+          <Property Name="ContentType" Type="int" Nullable="false" />
+          <Property Name="RestaurantURL" Type="nvarchar" Nullable="false" />
+        </EntityType>
         <EntityType Name="SearchKeywords">
           <Key>
             <PropertyRef Name="QueryKeyword" />
@@ -74,29 +93,40 @@
     <edmx:ConceptualModels>
       <Schema Namespace="LunchModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
         <EntityContainer Name="LunchEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="DeepLinkKeywords" EntityType="LunchModel.DeepLinkKeyword" />
           <EntitySet Name="FoodKeywords" EntityType="LunchModel.FoodKeyword" />
           <EntitySet Name="LunchMenuFeatures" EntityType="LunchModel.LunchMenuFeature" />
           <EntitySet Name="LunchMenuKeywords" EntityType="LunchModel.LunchMenuKeyword" />
-          <EntitySet Name="SearchKeywords" EntityType="LunchModel.SearchKeyword" />
           <EntitySet Name="LunchRestaurants" EntityType="LunchModel.LunchRestaurant" />
+          <EntitySet Name="RestaurantDeepLinks" EntityType="LunchModel.RestaurantDeepLink" />
+          <EntitySet Name="SearchKeywords" EntityType="LunchModel.SearchKeyword" />
         </EntityContainer>
+        <EntityType Name="DeepLinkKeyword">
+          <Key>
+            <PropertyRef Name="Word" />
+          </Key>
+          <Property Type="String" Name="Word" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="Weight" Nullable="false" />
+          <Property Type="Int64" Name="DetectionCount" Nullable="false" />
+          <Property Type="Int32" Name="ContentType" Nullable="false" />
+        </EntityType>
         <EntityType Name="FoodKeyword">
           <Key>
             <PropertyRef Name="Word" />
           </Key>
-          <Property Name="Word" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Type="String" Name="Word" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="LunchMenuFeature">
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
-          <Property Name="Restaurant" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
-          <Property Name="FeatureType" Type="Int32" Nullable="false" />
-          <Property Name="Line" Type="Int32" Nullable="false" />
-          <Property Name="LinePosition" Type="Int32" Nullable="false" />
-          <Property Name="Created" Type="DateTime" />
-          <Property Name="LastUsed" Type="DateTime" />
+          <Property Type="String" Name="id" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Restaurant" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="FeatureType" Nullable="false" />
+          <Property Type="Int32" Name="Line" Nullable="false" />
+          <Property Type="Int32" Name="LinePosition" Nullable="false" />
+          <Property Type="DateTime" Name="Created" />
+          <Property Type="DateTime" Name="LastUsed" />
         </EntityType>
         <EntityType Name="LunchMenuKeyword">
           <Key>
@@ -105,14 +135,6 @@
           <Property Type="String" Name="Word" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Weight" Nullable="false" />
           <Property Type="Int64" Name="DetectionCount" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SearchKeyword">
-          <Key>
-            <PropertyRef Name="QueryKeyword" />
-          </Key>
-          <Property Type="Decimal" Name="SuccessRate" Precision="53" Scale="0" />
-          <Property Type="String" Name="QueryKeyword" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="Category" Nullable="false" />
         </EntityType>
         <EntityType Name="LunchRestaurant">
           <Key>
@@ -137,39 +159,64 @@
           <Property Type="DateTime" Name="DateAdded" Nullable="false" />
           <Property Type="DateTime" Name="DateUpdated" />
         </EntityType>
-      </Schema>
+        <EntityType Name="RestaurantDeepLink">
+          <Key>
+            <PropertyRef Name="DeepLinkURL" />
+          </Key>
+          <Property Type="String" Name="DeepLinkURL" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="ContentType" Nullable="false" />
+          <Property Type="String" Name="RestaurantURL" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SearchKeyword">
+          <Key>
+            <PropertyRef Name="QueryKeyword" />
+          </Key>
+          <Property Type="String" Name="QueryKeyword" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Type="Decimal" Name="SuccessRate" Precision="53" Scale="0" />
+          <Property Type="Int32" Name="Category" Nullable="false" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="LunchModelStoreContainer" CdmEntityContainer="LunchEntities">
-          <EntitySetMapping Name="FoodKeywords"><EntityTypeMapping TypeName="LunchModel.FoodKeyword"><MappingFragment StoreEntitySet="FoodKeywords">
-            <ScalarProperty Name="Word" ColumnName="FoodKeyword" />
-          </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="LunchMenuFeatures"><EntityTypeMapping TypeName="LunchModel.LunchMenuFeature"><MappingFragment StoreEntitySet="LunchMenuFeatures">
-            <ScalarProperty Name="id" ColumnName="id" />
-            <ScalarProperty Name="Restaurant" ColumnName="Restaurant" />
-            <ScalarProperty Name="FeatureType" ColumnName="FeatureType" />
-            <ScalarProperty Name="Line" ColumnName="Line" />
-            <ScalarProperty Name="LinePosition" ColumnName="LinePosition" />
-            <ScalarProperty Name="Created" ColumnName="Created" />
-            <ScalarProperty Name="LastUsed" ColumnName="LastUsed" />
-          </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="LunchMenuKeywords">
-            <EntityTypeMapping TypeName="LunchModel.LunchMenuKeyword">
-              <MappingFragment StoreEntitySet="LunchMenuKeywords">
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="LunchModelStoreContainer" CdmEntityContainer="LunchEntities">
+          <EntitySetMapping Name="DeepLinkKeywords">
+            <EntityTypeMapping TypeName="LunchModel.DeepLinkKeyword">
+              <MappingFragment StoreEntitySet="DeepLinkKeywords">
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
                 <ScalarProperty Name="DetectionCount" ColumnName="DetectionCount" />
                 <ScalarProperty Name="Weight" ColumnName="Weight" />
                 <ScalarProperty Name="Word" ColumnName="Word" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SearchKeywords">
-            <EntityTypeMapping TypeName="LunchModel.SearchKeyword">
-              <MappingFragment StoreEntitySet="SearchKeywords">
-                <ScalarProperty Name="Category" ColumnName="Category" />
-                <ScalarProperty Name="QueryKeyword" ColumnName="QueryKeyword" />
-                <ScalarProperty Name="SuccessRate" ColumnName="SuccessRate" />
+          <EntitySetMapping Name="FoodKeywords">
+            <EntityTypeMapping TypeName="LunchModel.FoodKeyword">
+              <MappingFragment StoreEntitySet="FoodKeywords">
+                <ScalarProperty Name="Word" ColumnName="FoodKeyword" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LunchMenuFeatures">
+            <EntityTypeMapping TypeName="LunchModel.LunchMenuFeature">
+              <MappingFragment StoreEntitySet="LunchMenuFeatures">
+                <ScalarProperty Name="LastUsed" ColumnName="LastUsed" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="LinePosition" ColumnName="LinePosition" />
+                <ScalarProperty Name="Line" ColumnName="Line" />
+                <ScalarProperty Name="FeatureType" ColumnName="FeatureType" />
+                <ScalarProperty Name="Restaurant" ColumnName="Restaurant" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LunchMenuKeywords">
+            <EntityTypeMapping TypeName="LunchModel.LunchMenuKeyword">
+              <MappingFragment StoreEntitySet="LunchMenuKeywords">
+                <ScalarProperty Name="DetectionCount" ColumnName="DetectionCount" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="Word" ColumnName="Word" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -197,9 +244,26 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="RestaurantDeepLinks">
+            <EntityTypeMapping TypeName="LunchModel.RestaurantDeepLink">
+              <MappingFragment StoreEntitySet="RestaurantDeepLinks">
+                <ScalarProperty Name="RestaurantURL" ColumnName="RestaurantURL" />
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+                <ScalarProperty Name="DeepLinkURL" ColumnName="DeepLinkURL" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SearchKeywords">
+            <EntityTypeMapping TypeName="LunchModel.SearchKeyword">
+              <MappingFragment StoreEntitySet="SearchKeywords">
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="SuccessRate" ColumnName="SuccessRate" />
+                <ScalarProperty Name="QueryKeyword" ColumnName="QueryKeyword" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
@@ -218,11 +282,13 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="LunchModel">
-        <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.75" PointX="7.875" PointY="3.375" Height="1.099264322916667" IsExpanded="true" />
-        <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.75" PointX="7.875" PointY="1" Height="2.0853483072916674" IsExpanded="true" />
-        <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="1.875" PointX="4.75" PointY="1" Height="1.4279589843749996" />
-        <EntityTypeShape EntityType="LunchModel.SearchKeyword" Width="1.5" PointX="0.625" PointY="1" Height="1.4279589843749996" />
-        <EntityTypeShape EntityType="LunchModel.LunchRestaurant" Width="1.875" PointX="2.5" PointY="1" Height="3.8931689453124996" />
+        <EntityTypeShape EntityType="LunchModel.DeepLinkKeyword" Width="1.5" PointX="0.75" PointY="0.75" Height="1.5923063151041674" />
+        <EntityTypeShape EntityType="LunchModel.FoodKeyword" Width="1.5" PointX="2.75" PointY="0.75" Height="1.0992643229166674" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenuFeature" Width="1.5" PointX="2.75" PointY="2.75" Height="2.0853483072916674" />
+        <EntityTypeShape EntityType="LunchModel.LunchMenuKeyword" Width="1.5" PointX="4.75" PointY="0.75" Height="1.4279589843750031" />
+        <EntityTypeShape EntityType="LunchModel.LunchRestaurant" Width="1.875" PointX="4.75" PointY="3.75" Height="3.8931689453125031" />
+        <EntityTypeShape EntityType="LunchModel.RestaurantDeepLink" Width="1.5" PointX="0.75" PointY="5.75" Height="1.4279589843750031" />
+        <EntityTypeShape EntityType="LunchModel.SearchKeyword" Width="1.5" PointX="6.75" PointY="0.75" Height="1.4279589843750031" />
       </Diagram>
     </Diagrams>
   </Designer>

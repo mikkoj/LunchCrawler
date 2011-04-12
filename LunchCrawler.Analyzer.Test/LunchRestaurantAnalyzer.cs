@@ -79,7 +79,7 @@ namespace LunchCrawler.Analyzer.Test
                 return;
             }
 
-            var restaurantsToBeAnalyzed = LunchDA.Instance.GetLunchRestaurants((int)LunchMenuStatus.OK, 0.50M);
+            var restaurantsToBeAnalyzed = LunchDA.Instance.GetLunchRestaurants((int)LunchRestaurantStatus.OK, 0.50M);
             Logger.InfoFormat("Started analyzing total of {0} restaurants..\n", restaurantsToBeAnalyzed.Count());
             Parallel.ForEach(restaurantsToBeAnalyzed, AnalyzeLunchRestaurantWithTimeout);
         }

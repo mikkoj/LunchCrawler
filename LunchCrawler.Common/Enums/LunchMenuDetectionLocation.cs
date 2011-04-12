@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace LunchCrawler.Common.Enums
+﻿namespace LunchCrawler.Common.Enums
 {
     /// <summary>
     /// The location of a lunch menu detection (url path, title, content etc.)

@@ -6,9 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Autofac;
+
 using LunchCrawler.Common;
 using LunchCrawler.Common.Enums;
 using LunchCrawler.Common.Interfaces;
+using LunchCrawler.Common.IoC;
 using LunchCrawler.Common.Logging;
 using LunchCrawler.Common.Model;
 using LunchCrawler.Data.Local;
@@ -20,13 +23,12 @@ namespace LunchCrawler.MenuSeeker.Test
     public class LunchRestaurantSeeker : ILunchRestaurantSeeker
     {
         public ILogger Logger { get; set; }
+        private readonly ILunchRestaurantSearchEngine _searchEngine;
 
         public LunchRestaurantSeeker()
         {
             Logger = NullLogger.Instance;
         }
-
-        private readonly ILunchRestaurantSearchEngine _searchEngine;
 
         public LunchRestaurantSeeker(ILunchRestaurantSearchEngine searchEngine)
         {
@@ -34,7 +36,6 @@ namespace LunchCrawler.MenuSeeker.Test
             _searchEngine = searchEngine;
         }
 
-        private static readonly IEnumerable<LunchMenuKeyword> BasicLunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
         private static readonly IList<string> SearchKeywords = CreateSearchQueries(LunchDA.Instance.GetAllSearchKeywords());
 
 
@@ -104,19 +105,21 @@ namespace LunchCrawler.MenuSeeker.Test
                 return;
             }
 
+            // 1. let's do a bunch of searches
             Logger.Info("Searching for links through search engines..");
             var searchedUrls = _searchEngine.SearchForLunchMenuURLs(SearchKeywords);
-            var manuallyAddedUrls = LunchDA.Instance.GetLunchRestaurants((int)LunchMenuStatus.ManuallyAdded);
+            var manuallyAddedUrls = LunchDA.Instance.GetLunchRestaurants((int)LunchRestaurantStatus.ManuallyAdded);
 
             var allUrls = searchedUrls.Union(manuallyAddedUrls.Select(m => m.AbsoluteURL))
                                       .Distinct(new UrlComparer());
 
-
-            Logger.InfoFormat("Started scoring total of {0} links..", allUrls.Count());
+            // 2. let's split 'em urls into scoring frenzy
+            Logger.InfoFormat("Started scoring total of {0} links..\n\n", allUrls.Count());
             Parallel.ForEach(allUrls, ScoreLunchRestaurant);
+            //allUrls.ToList().ForEach(ScoreLunchRestaurant);
 
 
-            // let's also print the detection counts
+            // 3. let's print the detection counts
             var lunchMenuKeywords = LunchDA.Instance.GetAllBasicLunchMenuKeywords();
             foreach (var keyword in lunchMenuKeywords.OrderByDescending(keyword => keyword.DetectionCount))
             {
@@ -134,33 +137,33 @@ namespace LunchCrawler.MenuSeeker.Test
             {
                 URL = Utils.GetBaseUrl(url), // primary key
                 AbsoluteURL = url,           // used for creating and parsing the model
-                Status = (int)LunchMenuStatus.OK
+                Status = (int)LunchRestaurantStatus.OK
             };
 
             try
             {
                 // Check if we already have this one
                 var existingMenu = LunchDA.Instance.FindExistingLunchRestaurant(potentialRestaurant.URL);
-
-                if (existingMenu == null || existingMenu.Status == (int)LunchMenuStatus.CannotConnect)
+                if (existingMenu == null || existingMenu.Status == (int)LunchRestaurantStatus.CannotConnect)
                 {
                     var lunchMenuDocument = Utils.GetLunchRestaurantDocumentForUrl(url, Settings.Default.HTTPTimeoutSeconds);
                     if (lunchMenuDocument == null)
                     {
                         // no special error handling for now, any HTTP error -> can't connect
-                        potentialRestaurant.Status = (int)LunchMenuStatus.CannotConnect;
-                        LogLunchMenuScores(url, LunchMenuStatus.CannotConnect, new LunchMenuScores());
+                        potentialRestaurant.Status = (int)LunchRestaurantStatus.CannotConnect;
+                        LogLunchMenuScores(url, LunchRestaurantStatus.CannotConnect, new LunchMenuScores());
                         LunchDA.Instance.UpdateLunchRestaurant(potentialRestaurant);
                         return;
                     }
 
                     // let's calculate and log scores
                     var scores = GetScoresForHtmlDocument(lunchMenuDocument);
-                    LogLunchMenuScores(url, (LunchMenuStatus)potentialRestaurant.Status, scores);
+                    LogLunchMenuScores(url, (LunchRestaurantStatus)potentialRestaurant.Status, scores);
 
                     // ..and let's finish the potential restaurant instance and update the DB
                     CompletePotentialLunchRestaurant(lunchMenuDocument, potentialRestaurant, scores);
                     LunchDA.Instance.UpdateLunchRestaurant(potentialRestaurant);
+                    LunchDA.Instance.UpdateLunchRestaurantDeepLinks(potentialRestaurant.URL, scores.DeepLinks);
                 }
             }
             catch (EntityException entityEx)
@@ -182,28 +185,33 @@ namespace LunchCrawler.MenuSeeker.Test
         /// <summary>
         /// Calculates lunch menu scores for a Html-document.
         /// </summary>
-        private static LunchMenuScores GetScoresForHtmlDocument(LunchRestaurantDocument lunchMenuDocument)
+        public static LunchMenuScores GetScoresForHtmlDocument(LunchRestaurantDocument lunchMenuDocument)
         {
             // let's create a new detection based on the basic lunch menu keywords
-            var lunchMenuDetection = new LunchMenuDetection(BasicLunchMenuKeywords.ToList());
+            var detection = ServiceLocator.Instance.Container.Resolve<ILunchMenuDetection>();
+            
+            // let's calculate points for this document
+            var scorePoints = detection.GetScorePointsForDocument(lunchMenuDocument);
 
-            // let's calculate and collect individual node-points for the document
-            var scorePoints = lunchMenuDocument.HtmlDocument
-                                               .DocumentNode
-                                               .DescendantNodes()
-                                               .Where(node => !Utils.ShouldSkipNode(node))
-                                               .Select(lunchMenuDetection.ScoreNode)
-                                               .Where(scored => scored.DetectionLocation != LunchMenuDetectionLocation.Unknown)
-                                               .ToList();
+            // let's update the detection count for found lunch menu keywords and deep link keywords
+            detection.UpdateLunchMenuKeywordCountsDB();
 
-            // let's update the detection count for found lunch menu keywords
-            lunchMenuDetection.UpdateLunchMenuKeywordCountsDB();
-
-            // let's wrap and print scores
-            return new LunchMenuScores
+            // let's wrap the scores
+            var scores = new LunchMenuScores
             {
-                Points = scorePoints
+                Points = scorePoints,
             };
+
+            // if probability was below the limit - we'll try to find potential deep links in the document
+            if (scores.LunchMenuProbability < Settings.Default.LunchMenuProbabilityLimit)
+            {
+                var deepLinks = new List<RestaurantDeepLink>();
+                detection.FindDeepLinks(lunchMenuDocument, deepLinks);
+                detection.UpdateDeepLinkKeywordCountsDB();
+                scores.DeepLinks = deepLinks;
+            }
+
+            return scores;
         }
 
 
@@ -225,16 +233,17 @@ namespace LunchCrawler.MenuSeeker.Test
         }
 
 
-        public void LogLunchMenuScores(string url, LunchMenuStatus status, LunchMenuScores scores)
+        public void LogLunchMenuScores(string url, LunchRestaurantStatus status, LunchMenuScores scores)
         {
             Console.OutputEncoding = Encoding.Default;
 
             var scoreBuilder = new StringBuilder();
 
             scoreBuilder.AppendFormat("scores for URL: {0}\n", url);
-            scoreBuilder.AppendFormat("- status: {0} - total points: {1} - lunch menu probability: {2:P}\n",
+            scoreBuilder.AppendFormat("- status: {0} - total points: {1} - deep links: {2} - lunch menu probability: {3:P}\n",
                                       status,
                                       scores.Points.Sum(p => p.PointsGiven),
+                                      scores.DeepLinks != null ? scores.DeepLinks.Count : 0,
                                       scores.LunchMenuProbability);
 
             //foreach (var scorePoint in scores.Points.OrderByDescending(p => p.PointsGiven))

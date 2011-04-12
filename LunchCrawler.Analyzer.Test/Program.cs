@@ -46,7 +46,6 @@ namespace LunchCrawler.Analyzer.Test
 
             // let's create the catalog based on the types in the assembly
             var assembly = Assembly.GetExecutingAssembly();
-            builder.RegisterAssemblyTypes(assembly);
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
 
             // finally, let's build and return the container

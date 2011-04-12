@@ -34,10 +34,11 @@ namespace LunchCrawler.Common
 
         public static bool IsLink(HtmlNode node)
         {
-            return node.NodeType == HtmlNodeType.Element && 
-                node.Name.Equals("a", StringComparison.InvariantCultureIgnoreCase) && 
-                node.Attributes.Contains("href");
+            return node.NodeType == HtmlNodeType.Element &&
+                   node.Name.Equals("a", StringComparison.InvariantCultureIgnoreCase) &&
+                   node.Attributes.Contains("href");
         }
+
 
         public static LunchRestaurantDocument GetLunchRestaurantDocumentForUrl(string url)
         {
@@ -221,7 +222,7 @@ namespace LunchCrawler.Common
             {
                 var uri = GetUri(url);
                 return string.Format("{0}{1}", uri.Host, uri.LocalPath);
-            } 
+            }
             catch (FormatException)
             {
                 return url;
